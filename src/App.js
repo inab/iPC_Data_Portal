@@ -1,7 +1,6 @@
 import React, { Component, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Layout from './Layout/hoc/Layout';
-import ArrangerAdmin from '@arranger/admin-ui/dist';
 
 const Home  = React.lazy( () => import ('./containers/Home/Home'));
 
@@ -16,12 +15,6 @@ class App extends Component {
 
   render() {
 
-    /*const ArrangerAdminPage = () => (
-      <ArrangerAdmin basename="/" apiRoot="http://localhost:5050"/>
-    )*/
-
-    console.log(ArrangerAdmin);
-
     return (
 
       <Layout>
@@ -35,7 +28,7 @@ class App extends Component {
             )} />
 
           {/*}
-          <Route path="/tutorial" exact
+          <Route path="/search" exact
             render={() => (<Suspense fallback={<div> Loading tutorial... </div>} >
               <Tutorial />
             </Suspense>

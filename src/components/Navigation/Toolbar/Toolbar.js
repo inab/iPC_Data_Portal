@@ -5,7 +5,7 @@ const toolbar = () => (
     <nav class="navbar navbar-light navbar-expand-sm">
         <div class="container">
             <a class="navbar-brand" href="/">
-                Hi there 
+                iPC Data Portal
             </a>
             <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
