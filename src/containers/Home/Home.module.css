@@ -1,0 +1,16 @@
+.boxes {
+    padding: 25px;
+    background-color: #f9f9f9;
+    width: 97%;
+}
+
+.linkStyle {
+    color: #75B9BE;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.linkStyle:hover {
+    color: #75B9BE;
+    text-decoration: underline;
+}
