@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Aggs from '../Aggs/Aggs';
 import Search from '../Search/Search';
+import SQON from '../SQON/SQON';
 import classes from './FileRepository.css';
 
 class FileRepository extends Component {
@@ -13,18 +14,21 @@ class FileRepository extends Component {
 
       <React.Fragment>
         
-        <div>
-          <h3> 
-            <strong> FILE REPOSITORY </strong>
-          </h3>
-        </div>
-
-        <div class="row">
-            <div class="col-2">
-                <Aggs/>
-            </div>
-            <div class="col-10">
-                <Search/>
+        <br/>
+        
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-2">
+                    <Aggs />
+                </div>
+                <div class="col-10">
+                    <div class="row">
+                        <SQON />
+                    </div>
+                    <div class="row">
+                        <Search />
+                    </div>
+                </div>
             </div>
         </div>
         
