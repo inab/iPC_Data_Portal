@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Aggs from '../Aggs/Aggs';
 import Search from '../Search/Search';
 import SQON from '../SQON/SQON';
-import classes from './FileRepository.css';
+import classes from './FileRepository.module.css';
 
 class FileRepository extends Component {
 
