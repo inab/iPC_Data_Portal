@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ArrangerAdminPage from './AdminArranger';
 
 // Arranger Admin -> Test.
-// CORS Errors even after configuring a proxy...
+// CORS Errors even after proxy configuration.
 
 class Admin extends Component {
 

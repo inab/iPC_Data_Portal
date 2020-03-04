@@ -8,8 +8,6 @@ class FileRepository extends Component {
 
   render() {
 
-    //let width = "580px";
-
     return (
 
       <React.Fragment>

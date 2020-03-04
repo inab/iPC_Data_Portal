@@ -9,13 +9,6 @@ class Home extends Component {
     return (
       <React.Fragment>
         <div class="container-fluid">
-          {/*
-          <div class="row text-center">
-            <div class="col-12">
-              <img alt="overlay" src="../../../img/favicon/iPC_4c.png" />
-            </div>
-          </div>
-          */}
 
           <div class="row">
             <div class="col-lg-12 text-left mt-5 mb-5 pl-5">

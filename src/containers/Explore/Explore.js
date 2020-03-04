@@ -16,7 +16,7 @@ class Explore extends Component {
       console.log(`${key}: ${localStorage.getItem(key)}`);
     }*/
 
-    console.log(this.state.username);
+//    console.log(this.state.username);
     return (
 
       <React.Fragment>

@@ -4,12 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import * as Keycloak from 'keycloak-js';
 
-const app = (
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>
-);
-
 let initOptions = {
     url: 'https://inb.bsc.es/auth/', realm: 'IPC', clientId: 'ipc-react-portal', onLoad: 'login-required'
 }
@@ -23,6 +17,14 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
     } else {
         console.info("Authenticated");
     }
+
+    const app = (
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    );
+
+    console.log("React");
 
     ReactDOM.render(app, document.getElementById('root'));
 
@@ -40,8 +42,6 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
         }).error(() => {
             console.error('Failed to refresh token');
         });
-
-
     }, 60000)
 
 }).error(() => {
