@@ -1,12 +1,32 @@
 import React, { Component } from 'react';
 import Aggs from '../Aggs/Aggs';
 import Search from '../Search/Search';
-import SQON from '../SQON/SQON';
 import classes from './FileRepository.module.css';
 
 class FileRepository extends Component {
+    constructor(props){
+      super(props)
+
+      this.state = {
+        token : null,
+        refresh : null 
+      }
+  
+    }
+
+  componentDidMount () {
+    const token = localStorage.getItem("react-token");
+    const refresh = localStorage.getItem("react-refresh-token");  
+    this.setState({
+      token: token,
+      refresh: refresh
+    })
+  }
 
   render() {
+
+    console.log("Token: ", this.state.token);
+    console.log("Refresh token: ", this.state.refresh);
 
     return (
 
@@ -16,13 +36,10 @@ class FileRepository extends Component {
         
         <div class="container-fluid">
             <div class="row">
-                <div class="col-2">
+                {/*<div class="col-2">
                     <Aggs />
-                </div>
-                <div class="col-10">
-                    <div class="row">
-                        <SQON />
-                    </div>
+                </div>*/}
+                <div class="col-12">
                     <div class="row">
                         <Search />
                     </div>

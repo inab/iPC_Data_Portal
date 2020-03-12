@@ -91,7 +91,7 @@ class Search extends Component {
     const Portal = ({ style, ...props }) => {
       return (
         <div style={{ display: 'flex', ...style }}>
-          {/*<Aggregations
+          <Aggregations
             style={{ width: 300 }}
             componentProps={{
               getTermAggProps: () => ({
@@ -99,7 +99,7 @@ class Search extends Component {
               }),
             }}
             {...props}
-          />*/}
+          />
           <div
           >
             <CurrentSQON {...props} />

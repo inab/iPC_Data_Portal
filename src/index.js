@@ -24,7 +24,7 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
         </BrowserRouter>
     );
 
-    console.log("React");
+ // console.log("React");
 
     ReactDOM.render(app, document.getElementById('root'));
 
