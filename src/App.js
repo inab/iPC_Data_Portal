@@ -41,18 +41,6 @@ class App extends Component {
               </Suspense>
               )} />
 
-            <Route path="/members" exact
-              render={() => (<Suspense fallback={<div> Loading Members page... </div>} >
-                <Members />
-              </Suspense>
-              )} />
-
-            <Route path="/resources" exact
-              render={() => (<Suspense fallback={<div> Loading Resources page... </div>} >
-                <Resources />
-              </Suspense>
-              )} />
-
           </Switch>
 
       </Layout>

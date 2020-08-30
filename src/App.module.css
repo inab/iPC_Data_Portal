@@ -1,0 +1,17 @@
+.ipcButton {
+    color: white;
+    background-color: #75B9BE;
+    padding: 5px 15px;
+    border-radius: 10px;
+    border: 2px solid white;
+    text-decoration: none;
+}
+
+.ipcButton:hover {
+    color:#75B9BE;
+    background-color: white;
+    padding: 5px 15px;
+    border-radius: 10px;
+    border: 2px solid #75B9BE;
+    text-decoration: none;
+}

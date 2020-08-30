@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Search.module.css';
+import classes2 from '../../App.module.css';
+import {isEqual} from 'lodash';
 
 import {
   PORTAL_NAME,
@@ -22,8 +24,48 @@ import {
 
 
 class Search extends Component {
+  
+  shouldComponentUpdate () {
+    return false // this will lead to never re-render the component
+  }
+
+  state = { 
+    allRows: [],
+    selectedRows: [],
+    cart: [],
+    rendered: false
+  }
+  
+  allRowsHandler = (arrangerData) => { 
+    console.log("arranger Data")
+    console.log(arrangerData)
+    this.setState({
+       allRows: arrangerData,
+       rendered: true
+      })
+  }
+
+  selectedRowsHandler = (tableCheckboxes) => {
+    console.log(tableCheckboxes)
+    this.setState({selectedRows: tableCheckboxes})
+  }
+
+  cartHandler = (e) => {
+    e.preventDefault();
+    console.log(e)
+    var indexes = [...new Set(this.state.selectedRows)]
+    var elements = this.state.allRows.filter((el) => indexes.includes(el["id"]));
+    localStorage.setItem("cart", JSON.stringify(elements));
+    alert("Datasets added to the cart!")
+  }
 
   render() {
+
+    //if(this.state.rendered){
+      var button = (<button className={classes2.ipcButton} onClick={this.cartHandler}>
+                      Add to cart
+                    </button>)
+    //  }
 
     const ChooseProject = ({ index, projectId, update, projects }) => {
       return (
@@ -103,11 +145,18 @@ class Search extends Component {
           <div
           >
             <CurrentSQON {...props} />
-            <Table {...props} />
+            <Table rows={this.selectedRowsHandler}
+            {...props} />
+            {button}
           </div>
         </div>
       );
     };
+
+    console.log("allRows:")
+    console.log(this.state.allRows)
+    console.log("selectedRows:")
+    console.log(this.state.selectedRows)
 
     return (
 
@@ -126,6 +175,7 @@ class Search extends Component {
                 index={index}
                 graphqlField={graphqlField}
                 projectId={projectId}
+                arrangerHandler={this.allRowsHandler}
                 render={props => {
                   return (
                     <React.Fragment>

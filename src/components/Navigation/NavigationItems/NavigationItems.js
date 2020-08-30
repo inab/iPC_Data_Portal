@@ -7,8 +7,8 @@ const navigationItems = () => (
         <NavigationItem link="/" exact > Dashboard </NavigationItem>
         <NavigationItem link="/explore" exact> Explore Data </NavigationItem>
         <NavigationItem link="/filerepository" exact> File Repository </NavigationItem>
-        <NavigationItem link="/members" exact> Members </NavigationItem>
-        <NavigationItem link="/resources" exact> Resources </NavigationItem>
+        {/*<NavigationItem link="/members" exact> Members </NavigationItem>
+        <NavigationItem link="/resources" exact> Resources </NavigationItem>*/}
         <NavigationItem link="https://inb.bsc.es/auth/realms/IPC/protocol/openid-connect/logout" exact> Logout </NavigationItem>
     </ul>
 );

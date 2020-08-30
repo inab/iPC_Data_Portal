@@ -23,7 +23,7 @@ class Home extends Component {
             </div>
 
             <div class="col-lg-6 text-center">
-              <h1> Hi there!</h1>
+              <h1> iPC Catalogue </h1>
             </div>
 
           </div>
