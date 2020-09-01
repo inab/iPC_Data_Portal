@@ -34,13 +34,36 @@ class Explore extends Component {
         }
       }).then(response => {
         merged = Array.prototype.concat.apply([], response.data)
-
-        this.setState({
-          cartData : cartData,
-          dbData: merged,
-          access_token: access_token
-        })
-      }).catch(error => {
+        var es_url = ""
+        var url_list = []
+        for (var i = 0; i < merged.length; i++) {
+          es_url = "https://catalogue.ipc-project.bsc.es/es_host/pbta_histologies_filecentric/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
+          url_list.push(es_url)
+        }
+        /*
+        axios.all(url_list.map(l => axios.get(l)))
+          .then(axios.spread(function (...res) {
+            // all requests are now complete
+            // console.log(res[1].data.hits.hits[0]._source);
+            // }
+        */
+        
+        let promiseArr = url_list.map(l => fetch(l).then(res => res.json()));
+        Promise.all(promiseArr).then(res => {
+          var objArr = []
+          for (var j = 0; j < res.length; j++) {
+              objArr.push(res[j].hits.hits[0]._source) 
+          }
+          this.setState({
+            cartData : cartData,
+            dbData: objArr,
+            access_token: access_token
+            })
+          })
+          .catch(error => {
+            throw error;
+        });
+        }).catch(error => {
         throw error;
     });
   }
@@ -63,7 +86,7 @@ class Explore extends Component {
       localStorage.setItem("cart", JSON.stringify(newCart))
       this.setState({
         cartData: newCart,
-        dbData: [...this.state.dbData, response.data[0]]
+        dbData: [...this.state.dbData, d]
       })
     })
     .catch(error => {
@@ -74,8 +97,7 @@ class Explore extends Component {
 
   removeFromVRE = async (e, d) => {
     e.preventDefault();
-    console.log("d.file_ID")
-    console.log(d._id)
+    
     axios({
       method: 'delete',
       url: this.state.session_url,
@@ -83,11 +105,14 @@ class Explore extends Component {
         Authorization: this.state.access_token
       },
       data:
-      { _id : d._id }
+      { _id : d.file_ID }
     }).then(response => {
-      var newdb = this.state.dbData.filter(el => el["_id"] !== d._id)
+      var newdb = this.state.dbData.filter(el => el["file_ID"] !== d.file_ID)
+      var newCart = [...this.state.cartData, d]
+      localStorage.setItem("cart", JSON.stringify(newCart))
       this.setState({
-        dbData: newdb
+        dbData: newdb,
+        cartData: newCart
       })
     })
     .catch(error => {
@@ -96,6 +121,7 @@ class Explore extends Component {
   }
 
   render() {
+    
     return (
       <React.Fragment>
         <br/>
@@ -111,13 +137,13 @@ class Explore extends Component {
                     return (
                       <div class="card mb-2" key={idx}>
                         <div class="card-body"> 
-                          <h4 class="card-title"> fileID : {d._id} </h4>
-                          <p class="card-text"> <i> file_locator : {d.metadata.file_locator} </i> </p>
-                          <p class="card-text"> <i> es_host : {d.metadata.es_index} </i> </p>
+                          <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                          <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                          <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
                           <button onClick={(e) => this.removeFromVRE(e, d)} class="stretched-link btn btn-danger"> Remove data </button>
                         </div>
                       </div>)
-                  })}
+                  })} 
               <br/>
               <br/>
               <h5> Cart datasets: </h5>
