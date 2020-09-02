@@ -1,0 +1,21 @@
+.anchorLinks {
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #CAD461;
+}
+
+.anchorLinks:hover{
+    color: #75B9BE;
+    text-decoration: none;
+}
+
+.leftbox { 
+    float:left;  
+    width:75%; 
+} 
+
+.rightbox { 
+    float:right;  
+    width:25%; 
+} 

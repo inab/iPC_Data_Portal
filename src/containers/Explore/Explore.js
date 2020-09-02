@@ -8,7 +8,8 @@ import axios from 'axios';
 class Explore extends Component {
 
   state = {
-    dbData : [],
+    vreData : [],
+    cavaticaData: [],
     cartData : [],
     access_token :  "",
     session_url : "https://catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata",
@@ -40,9 +41,11 @@ class Explore extends Component {
         merged = Array.prototype.concat.apply([], response.data)
         var es_url = ""
         var url_list = []
+        var analysis = []
         for (var i = 0; i < merged.length; i++) {
           es_url = "https://catalogue.ipc-project.bsc.es/es_host/pbta_histologies_filecentric/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
           url_list.push(es_url)
+          analysis.push(merged[i].metadata.analysis)
         }
         /*
         axios.all(url_list.map(l => axios.get(l)))
@@ -51,16 +54,24 @@ class Explore extends Component {
             // console.log(res[1].data.hits.hits[0]._source);
             // }
         */
-        
+
         let promiseArr = url_list.map(l => fetch(l).then(res => res.json()));
         Promise.all(promiseArr).then(res => {
-          var objArr = []
+          var vreArr = []
+          var cavaticaArr = []
           for (var j = 0; j < res.length; j++) {
-              objArr.push(res[j].hits.hits[0]._source) 
+              if(analysis[j] === "vre") {
+                vreArr.push(res[j].hits.hits[0]._source) 
+              } 
+              if(analysis[j] === "cavatica") {
+                cavaticaArr.push(res[j].hits.hits[0]._source) 
+              }  
           }
+
           this.setState({
             cartData : cartData,
-            dbData: objArr,
+            vreData: vreArr,
+            cavaticaData: cavaticaArr,
             access_token: access_token
             })
           })
@@ -72,7 +83,7 @@ class Explore extends Component {
     });
   }
 
-  postToVRE = async (e, d) => {
+  postToVRE = async (e, d, analysis) => {
     e.preventDefault();
     var res = ""
     var newCart = ""
@@ -84,14 +95,23 @@ class Explore extends Component {
         Authorization: this.state.access_token
       },
       data:
-      { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: "pbta_histologies_filecentric" } }
+      { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: "pbta_histologies_filecentric", analysis: analysis } }
     }).then(response => {
       newCart = this.state.cartData.filter(el => el["file_ID"] !== response.data[0]["_id"])
       localStorage.setItem("cart", JSON.stringify(newCart))
-      this.setState({
-        cartData: newCart,
-        dbData: [...this.state.dbData, d]
-      })
+
+      if(response.data[0].metadata["analysis"] === "vre") {
+        this.setState({
+          cartData: newCart,
+          vreData: [...this.state.vreData, d]
+        })
+      }
+      if(response.data[0].metadata["analysis"] === "cavatica") {
+        this.setState({
+          cartData: newCart,
+          cavaticaData: [...this.state.cavaticaData, d]
+        })
+      }
     })
     .catch(error => {
       throw error;
@@ -99,7 +119,7 @@ class Explore extends Component {
 
   }
 
-  removeFromVRE = async (e, d) => {
+  removeFromVRE = async (e, d, analysis) => {
     e.preventDefault();
     
     axios({
@@ -111,13 +131,24 @@ class Explore extends Component {
       data:
       { _id : d.file_ID }
     }).then(response => {
-      var newdb = this.state.dbData.filter(el => el["file_ID"] !== d.file_ID)
+      var newdb = ""
       var newCart = [...this.state.cartData, d]
       localStorage.setItem("cart", JSON.stringify(newCart))
-      this.setState({
-        dbData: newdb,
-        cartData: newCart
-      })
+
+      if(analysis === "vre"){
+        newdb = this.state.vreData.filter(el => el["file_ID"] !== d.file_ID)
+        this.setState({
+          vreData: newdb,
+          cartData: newCart
+        })
+      }
+      if(analysis === "cavatica") {
+        newdb = this.state.cavaticaData.filter(el => el["file_ID"] !== d.file_ID)
+        this.setState({
+          cavaticaData: newdb,
+          cartData: newCart
+        })
+      }
     })
     .catch(error => {
       throw error;
@@ -146,21 +177,36 @@ class Explore extends Component {
         <div class="container-fluid">
           <div class="row">
             <div class="col-lg-12 text-left mt-5 mb-5 pl-5">
-              <h1> Explore data section </h1>
+              <h1> Data Management </h1>
               <br/>
-              <h5> Stored datasets: </h5>
               <br/>
-              <p> Inspect and/or remove already loaded datasets into VRE. </p>
-                  {this.state.dbData.map((d, idx)=>{
+              <p> <a href="#anchor1" className={classes.anchorLinks}> 1) Data sets available to iPC openVRE </a> </p>
+              <p> <a href="#anchor2" className={classes.anchorLinks}> 2) Data sets available to CHOP Cavatica </a> </p>
+              <p> <a href="#anchor3" className={classes.anchorLinks}> 3) Preselected data sets from catalogue </a> </p>
+              <br/>
+              <br/>
+              <br/>
+              <h5 id="anchor1"> Data sets available to the iPC openVRE: </h5>
+              <br/>
+              <div class="mb-5"> 
+                <div className={classes.leftbox}>
+                  <p> Inspect and/or remove already loaded data sets into VRE. </p>
+                </div>
+                <div className={classes.rightbox}>
+                  <a href="https://vre.ipc-project.bsc.es/openvre/login.php" target="_blank" className={classes2.ipcButton}> Go to iPC openVRE </a>
+                </div>
+              </div>
+              <div class="mt-5">
+                  {this.state.vreData.map((d, idx)=>{
                     return (
                       <div class="card mb-2" key={idx}>
                         <div class="card-body"> 
                           <h4 class="card-title"> fileID : {d.file_ID} </h4>
                           <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
                           <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
-                          <button onClick={(e) => this.removeFromVRE(e, d)} class="btn btn-danger"> Remove data </button>
-                          <button onClick={(e) => this.getDetails(e, idx, "db", d)} className={classes2.ipcButton}> Get Details </button>
-                          <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="db">
+                          <button onClick={(e) => this.removeFromVRE(e, d, "vre")} class="btn btn-danger" style={{'margin-right' : "5px"}}> Unload data </button>
+                          <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{'margin-right': "5px"}}> Get Details </button>
+                          <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
                             {Object.entries(this.state.details).map(([key,value])=>{
                               return (
                                   <div>{key} : {value.toString()}</div>
@@ -170,11 +216,45 @@ class Explore extends Component {
                         </div>
                       </div>)
                   })} 
+              </div>
               <br/>
               <br/>
-              <h5> Cart datasets: </h5>
+              <h5 id="anchor2"> Data sets available to Cavatica: </h5>
               <br/>
-              <p> Inspect and/or load datasets into VRE for their analysis. </p>
+              <div class="mb-5"> 
+                <div className={classes.leftbox}>
+                  <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
+                </div>
+                <div className={classes.rightbox}>
+                  <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
+                </div>
+              </div>
+              <div class="mt-5">
+                  {this.state.cavaticaData.map((d, idx)=>{
+                    return (
+                      <div class="card mb-2" key={idx}>
+                        <div class="card-body"> 
+                          <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                          <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                          <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
+                          <button onClick={(e) => this.removeFromVRE(e, d, "cavatica")} class="btn btn-danger" style={{"margin-right": "5px"}}> Unload data </button>
+                          <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
+                          <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
+                            {Object.entries(this.state.details).map(([key,value])=>{
+                              return (
+                                  <div>{key} : {value.toString()}</div>
+                                );
+                            })}
+                          </Modal> 
+                        </div>
+                      </div>)
+                  })} 
+              </div>
+              <br/>
+              <br/>
+              <h5 id="anchor3"> Preselected data sets from catalogue: </h5>
+              <br/>
+              <p> Inspect and/or load data sets for their analysis. </p>
                 {this.state.cartData.map((d, idx)=>{
                   return (
                     <div class="card mb-2" key={idx}>
@@ -182,8 +262,9 @@ class Explore extends Component {
                         <h4 class="card-title"> fileID : {d.file_ID} </h4>
                         <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
                         <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
-                        <button onClick={(e) => this.postToVRE(e, d)} class="btn btn-success"> Load into VRE </button>
-                        <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton}> Get Details </button>
+                        <button onClick={(e) => this.postToVRE(e, d, "vre")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to VRE </button>
+                        <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
+                        <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
                         <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
                             {Object.entries(this.state.details).map(([key,value])=>{
                               return (
