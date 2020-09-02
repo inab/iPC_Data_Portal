@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Explore.module.css';
 import classes2 from '../../App.module.css';
+import Modal from '../../components/Navigation/Modal/Modal';
 import * as _ from 'lodash';
 import axios from 'axios';
 
@@ -11,7 +12,10 @@ class Explore extends Component {
     cartData : [],
     access_token :  "",
     session_url : "https://catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata",
-    changed : false
+    changed : false,
+    details : [],
+    index: "",
+    switch: ""
   }
 
   componentDidMount() {
@@ -120,6 +124,20 @@ class Explore extends Component {
     }); 
   }
 
+  getDetails = async (e, idx, loc, d) => {
+    e.preventDefault();
+
+    if(this.state.index === idx && this.state.switch === loc) {
+      idx = ""
+    }
+    
+    this.setState({
+      details: d,
+      index: idx,
+      switch: loc
+    })
+  }
+
   render() {
     
     return (
@@ -140,7 +158,15 @@ class Explore extends Component {
                           <h4 class="card-title"> fileID : {d.file_ID} </h4>
                           <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
                           <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
-                          <button onClick={(e) => this.removeFromVRE(e, d)} class="stretched-link btn btn-danger"> Remove data </button>
+                          <button onClick={(e) => this.removeFromVRE(e, d)} class="btn btn-danger"> Remove data </button>
+                          <button onClick={(e) => this.getDetails(e, idx, "db", d)} className={classes2.ipcButton}> Get Details </button>
+                          <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="db">
+                            {Object.entries(this.state.details).map(([key,value])=>{
+                              return (
+                                  <div>{key} : {value.toString()}</div>
+                                );
+                            })}
+                          </Modal> 
                         </div>
                       </div>)
                   })} 
@@ -156,8 +182,15 @@ class Explore extends Component {
                         <h4 class="card-title"> fileID : {d.file_ID} </h4>
                         <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
                         <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
-                        <button onClick={(e) => this.postToVRE(e, d)} class="stretched-link" className={classes2.ipcButton}> Load into VRE </button>
-              
+                        <button onClick={(e) => this.postToVRE(e, d)} class="btn btn-success"> Load into VRE </button>
+                        <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton}> Get Details </button>
+                        <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
+                            {Object.entries(this.state.details).map(([key,value])=>{
+                              return (
+                                  <div>{key} : {value.toString()}</div>
+                                );
+                            })}
+                        </Modal> 
                       </div>
                     </div>)
                   })}
