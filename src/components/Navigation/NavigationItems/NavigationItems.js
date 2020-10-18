@@ -5,7 +5,7 @@ import NavigationItem from './NavigationItem/NavigationItem';
 const navigationItems = () => (
     <ul class="navbar-nav ml-auto">
         <NavigationItem link="/" exact > Dashboard </NavigationItem>
-        <NavigationItem link="/explore" exact> Explore Data </NavigationItem>
+        <NavigationItem link="/explore" exact> Data Management </NavigationItem>
         <NavigationItem link="/filerepository" exact> File Repository </NavigationItem>
         {/*<NavigationItem link="/members" exact> Members </NavigationItem>
         <NavigationItem link="/resources" exact> Resources </NavigationItem>*/}

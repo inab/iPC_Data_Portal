@@ -39,6 +39,8 @@ class Explore extends Component {
         }
       }).then(response => {
         merged = Array.prototype.concat.apply([], response.data)
+        console.log("merged")
+        console.log(merged)
         var es_url = ""
         var url_list = []
         var analysis = []
@@ -47,6 +49,12 @@ class Explore extends Component {
           url_list.push(es_url)
           analysis.push(merged[i].metadata.analysis)
         }
+
+        console.log("url_list:")
+        console.log(url_list)
+        console.log("analysis:")
+        console.log(analysis)
+
         /*
         axios.all(url_list.map(l => axios.get(l)))
           .then(axios.spread(function (...res) {
@@ -57,6 +65,8 @@ class Explore extends Component {
 
         let promiseArr = url_list.map(l => fetch(l).then(res => res.json()));
         Promise.all(promiseArr).then(res => {
+          console.log("res url_list")
+          console.log(res)
           var vreArr = []
           var cavaticaArr = []
           for (var j = 0; j < res.length; j++) {
@@ -88,6 +98,14 @@ class Explore extends Component {
     var res = ""
     var newCart = ""
     var oldCart = ""
+    
+    console.log("analysis:")
+    console.log(analysis)
+    console.log("d:")
+    console.log(d)
+    console.log("token")
+    console.log(this.state.access_token)
+
     axios({
       method: 'post',
       url: this.state.session_url,
@@ -97,16 +115,25 @@ class Explore extends Component {
       data:
       { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: "pbta_histologies_filecentric", analysis: analysis } }
     }).then(response => {
-      newCart = this.state.cartData.filter(el => el["file_ID"] !== response.data[0]["_id"])
+      console.log("response:")
+      console.log(response)
+
+      var data = JSON.parse(response.config.data)
+      
+      console.log("parsed response")
+      console.log(data)
+
+      //newCart = this.state.cartData.filter(el => el["file_ID"] !== response.data[0]["_id"])
+      newCart = this.state.cartData.filter(el => el["file_ID"] !== data["_id"])
       localStorage.setItem("cart", JSON.stringify(newCart))
 
-      if(response.data[0].metadata["analysis"] === "vre") {
+      if(data.metadata["analysis"] === "vre") {
         this.setState({
           cartData: newCart,
           vreData: [...this.state.vreData, d]
         })
       }
-      if(response.data[0].metadata["analysis"] === "cavatica") {
+      if(data.metadata["analysis"] === "cavatica") {
         this.setState({
           cartData: newCart,
           cavaticaData: [...this.state.cavaticaData, d]
@@ -193,7 +220,8 @@ class Explore extends Component {
                   <p> Inspect and/or remove already loaded data sets into VRE. </p>
                 </div>
                 <div className={classes.rightbox}>
-                  <a href="https://vre.ipc-project.bsc.es/openvre/login.php" target="_blank" className={classes2.ipcButton}> Go to iPC openVRE </a>
+                  <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC openVRE </a>
+
                 </div>
               </div>
               <div class="mt-5">
@@ -275,6 +303,16 @@ class Explore extends Component {
                       </div>
                     </div>)
                   })}
+                  <div class="card mb-2">
+                        <div class="card-body"> 
+                          <h4 class="card-title"> fileID : REQUEST_DEMO_ID </h4>
+                          <p class="card-text"> <i> file_locator : REQUEST_DEMO_LOCATOR </i> </p>
+                          <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
+                          <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to VRE </button>
+                          <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to Cavatica </button>
+                          <button class="btn btn-warning" style={{"margin-right": "5px"}}> Request Access </button>                                
+                        </div>
+                      </div>
             </div>
           </div>
         </div>
