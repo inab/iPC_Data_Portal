@@ -16,7 +16,8 @@ class Explore extends Component {
     changed : false,
     details : [],
     index: "",
-    switch: ""
+    switch: "",
+    option: "",
   }
 
   componentDidMount() {
@@ -84,6 +85,10 @@ class Explore extends Component {
         }).catch(error => {
         throw error;
     });
+  }
+
+  selectionHandler = (e, option) => {
+    this.setState({option: option})
   }
 
   postToVRE = async (e, d, analysis) => {
@@ -178,150 +183,188 @@ class Explore extends Component {
   }
 
   render() {
+
+    let header = ""
+    let body = ""
+    
+    if(this.state.option === "vre") {
+      header = (
+        <div class="mt-5">
+          <h5> Data sets available to the iPC VRE: </h5>
+          <div class="mb-5"> 
+            <div className={classes.leftbox}>
+              <p> Inspect and/or remove already loaded data sets into VRE. </p>
+            </div>
+            <div className={classes.rightbox}>
+              <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
+            </div>
+          </div>
+        </div>
+      )
+
+      body = (
+        <div class="mt-5">
+          {this.state.vreData.map((d, idx)=>{
+          return (
+            <div class="card mb-2" key={idx}>
+              <div class="card-body"> 
+                <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                <button onClick={(e) => this.removeFromVRE(e, d, "vre")} class="btn btn-danger" style={{'margin-right' : "5px"}}> Unload data </button>
+                <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{'margin-right': "5px"}}> Get Details </button>
+                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
+                <div>
+                  <table class="table table-hover table-bordered">
+                    <tbody>
+                      {Object.entries(this.state.details).map(([key,value])=>{
+                      return (    
+                        <tr>
+                          <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                            <td> {value.toString()} </td>
+                        </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>  
+                </Modal> 
+              </div>
+            </div>)
+          })} 
+        </div>
+      )
+    } 
+    
+    else if (this.state.option === "cavatica") {
+      header = (
+        <div class="mt-5">
+          <h5> Data sets available to Cavatica: </h5>
+          <div class="mb-5"> 
+            <div className={classes.leftbox}>
+              <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
+            </div>
+            <div className={classes.rightbox}>
+              <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
+            </div>
+          </div>
+        </div>
+      )
+
+      body = (
+        <div class="mt-5">
+          {this.state.cavaticaData.map((d, idx)=>{
+          return (
+            <div class="card mb-2" key={idx}>
+              <div class="card-body"> 
+                <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                <button onClick={(e) => this.removeFromVRE(e, d, "cavatica")} class="btn btn-danger" style={{"margin-right": "5px"}}> Unload data </button>
+                <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
+                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
+                <div>
+                  <table class="table table-hover table-bordered">
+                    <tbody>
+                      {Object.entries(this.state.details).map(([key,value])=>{
+                        return (    
+                          <tr>
+                            <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                              <td> {value.toString()} </td>
+                          </tr>
+                          );
+                      })}
+                    </tbody>
+                  </table>
+                </div> 
+                </Modal> 
+              </div>
+            </div>)
+          })} 
+        </div>        
+      )
+    }
+
+    else if (this.state.option === "preselected") {
+      header = (
+        <div class="mt-5">
+          <h5> Preselected data sets from catalogue: </h5>
+          <p> Inspect and/or load data sets for their analysis. </p>
+        </div>
+      )
+
+      body = (
+        <div class="mt-5">
+        {this.state.cartData.map((d, idx)=>{
+          return (
+            <div class="card mb-2" key={idx}>
+              <div class="card-body"> 
+                <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                <button onClick={(e) => this.postToVRE(e, d, "vre")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to VRE </button>
+                <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
+                <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
+                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
+                <div>
+                    <table class="table table-hover table-bordered">
+                      <tbody>
+                        {Object.entries(this.state.details).map(([key,value])=>{
+                          return (    
+                            <tr>
+                              <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                                <td> {value.toString()} </td>
+                            </tr>
+                            );
+                        })}
+                      </tbody>
+                    </table>
+                  </div> 
+                </Modal> 
+              </div>
+            </div>)
+          })}
+          <div class="card mb-2">
+                <div class="card-body"> 
+                  <h4 class="card-title"> fileID : REQUEST_DEMO_ID </h4>
+                  <p class="card-text"> <i> file_locator : REQUEST_DEMO_LOCATOR </i> </p>
+                  <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
+                  <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to VRE </button>
+                  <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to Cavatica </button>
+                  <button class="btn btn-warning" style={{"margin-right": "5px"}}> Request Access </button>                                
+                </div>
+          </div>
+          </div>    
+      )
+    }
     
     return (
       <React.Fragment>
         <br/>
         <div class="container-fluid">
           <div class="row">
-            <div class="col-lg-12 text-left mt-5 mb-5 pl-5">
+            <div class="col-lg-12 text-left mt-5 mb-5 pl-5 pr-5">
               <h1> Data Management </h1>
               <br/>
               <br/>
-              <p> <a href="#anchor1" className={classes.anchorLinks}> 1) Data sets available to iPC openVRE </a> </p>
-              <p> <a href="#anchor2" className={classes.anchorLinks}> 2) Data sets available to CHOP Cavatica </a> </p>
-              <p> <a href="#anchor3" className={classes.anchorLinks}> 3) Preselected data sets from catalogue </a> </p>
-              <br/>
-              <br/>
-              <br/>
-              <h5 id="anchor1"> Data sets available to the iPC openVRE: </h5>
-              <br/>
-              <div class="mb-5"> 
-                <div className={classes.leftbox}>
-                  <p> Inspect and/or remove already loaded data sets into VRE. </p>
-                </div>
-                <div className={classes.rightbox}>
-                  <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC openVRE </a>
-                </div>
-              </div>
-              <br/>
-              <div class="mt-5">
-                  {this.state.vreData.map((d, idx)=>{
-                    return (
-                      <div class="card mb-2" key={idx}>
-                        <div class="card-body"> 
-                          <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                          <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                          <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                          <button onClick={(e) => this.removeFromVRE(e, d, "vre")} class="btn btn-danger" style={{'margin-right' : "5px"}}> Unload data </button>
-                          <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{'margin-right': "5px"}}> Get Details </button>
-                          <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
-                          <div>
-                            <table class="table table-hover table-bordered">
-                              <tbody>
-                                {Object.entries(this.state.details).map(([key,value])=>{
-                                  return (    
-                                    <tr>
-                                      <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
-                                        <td> {value.toString()} </td>
-                                    </tr>
-                                    );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>  
-                          </Modal> 
-                        </div>
-                      </div>)
-                  })} 
-              </div>
-              <br/>
-              <br/>
-              <h5 id="anchor2"> Data sets available to Cavatica: </h5>
-              <br/>
-              <div class="mb-5"> 
-                <div className={classes.leftbox}>
-                  <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
-                </div>
-                <div className={classes.rightbox}>
-                  <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
-                </div>
-              </div>
-              <br/>
-              <div class="mt-5">
-                  {this.state.cavaticaData.map((d, idx)=>{
-                    return (
-                      <div class="card mb-2" key={idx}>
-                        <div class="card-body"> 
-                          <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                          <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                          <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                          <button onClick={(e) => this.removeFromVRE(e, d, "cavatica")} class="btn btn-danger" style={{"margin-right": "5px"}}> Unload data </button>
-                          <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                          <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
-                          <div>
-                            <table class="table table-hover table-bordered">
-                              <tbody>
-                                {Object.entries(this.state.details).map(([key,value])=>{
-                                  return (    
-                                    <tr>
-                                      <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
-                                        <td> {value.toString()} </td>
-                                    </tr>
-                                    );
-                                })}
-                              </tbody>
-                            </table>
-                          </div> 
-                          </Modal> 
-                        </div>
-                      </div>)
-                  })} 
-              </div>
-              <br/>
-              <br/>
-              <h5 id="anchor3"> Preselected data sets from catalogue: </h5>
-              <br/>
-              <p> Inspect and/or load data sets for their analysis. </p>
-                {this.state.cartData.map((d, idx)=>{
-                  return (
-                    <div class="card mb-2" key={idx}>
-                      <div class="card-body"> 
-                        <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                        <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                        <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                        <button onClick={(e) => this.postToVRE(e, d, "vre")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to VRE </button>
-                        <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
-                        <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                        <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
-                        <div>
-                            <table class="table table-hover table-bordered">
-                              <tbody>
-                                {Object.entries(this.state.details).map(([key,value])=>{
-                                  return (    
-                                    <tr>
-                                      <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
-                                        <td> {value.toString()} </td>
-                                    </tr>
-                                    );
-                                })}
-                              </tbody>
-                            </table>
-                          </div> 
-                        </Modal> 
-                      </div>
-                    </div>)
-                  })}
-                  <div class="card mb-2">
-                        <div class="card-body"> 
-                          <h4 class="card-title"> fileID : REQUEST_DEMO_ID </h4>
-                          <p class="card-text"> <i> file_locator : REQUEST_DEMO_LOCATOR </i> </p>
-                          <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
-                          <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to VRE </button>
-                          <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to Cavatica </button>
-                          <button class="btn btn-warning" style={{"margin-right": "5px"}}> Request Access </button>                                
-                        </div>
-                      </div>
+              <p style={{ "color" : "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
+              <br/>  
+              <section> 
+                <table class="table table-bordered table-sm text-center">
+                  <tbody>
+                    <tr>
+                      <th scope="row"> Available datasets </th>
+                        <td className={classes.listItem} onClick={(e) => this.selectionHandler(e, "vre")}> Virtual Research Environment </td>
+                        <td className={classes.listItem} onClick={(e) => this.selectionHandler(e, "cavatica")}> Cavatica </td>
+                        <td className={classes.listItem} onClick={(e) => this.selectionHandler(e, "preselected")}> Preselected from catalogue </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <section>
+                {header}
+                {body}
+              </section>
             </div>
           </div>
         </div>

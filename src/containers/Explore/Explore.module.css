@@ -1,13 +1,16 @@
-.anchorLinks {
+.listItem {
     text-decoration: none;
-    font-size: 24px;
+    font-size: 16px;
+    color: #75B9BE;
     font-weight: bold;
-    color: #CAD461;
+    cursor: pointer;
 }
 
-.anchorLinks:hover{
-    color: #75B9BE;
+.listItem:hover{ 
+    color: white;
+    font-weight: bold;
     text-decoration: none;
+    background-color: #75B9BE;
 }
 
 .leftbox { 
