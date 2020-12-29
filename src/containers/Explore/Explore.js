@@ -39,21 +39,14 @@ class Explore extends Component {
         }
       }).then(response => {
         merged = Array.prototype.concat.apply([], response.data)
-        console.log("merged")
-        console.log(merged)
         var es_url = ""
         var url_list = []
         var analysis = []
         for (var i = 0; i < merged.length; i++) {
-          es_url = "https://catalogue.ipc-project.bsc.es/es_host/pbta_histologies_filecentric/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
+          es_url = "https://catalogue.ipc-project.bsc.es/es_host/" + merged[i].metadata.es_index + "/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
           url_list.push(es_url)
           analysis.push(merged[i].metadata.analysis)
         }
-
-        console.log("url_list:")
-        console.log(url_list)
-        console.log("analysis:")
-        console.log(analysis)
 
         /*
         axios.all(url_list.map(l => axios.get(l)))
@@ -98,13 +91,6 @@ class Explore extends Component {
     var res = ""
     var newCart = ""
     var oldCart = ""
-    
-    console.log("analysis:")
-    console.log(analysis)
-    console.log("d:")
-    console.log(d)
-    console.log("token")
-    console.log(this.state.access_token)
 
     axios({
       method: 'post',
@@ -113,17 +99,12 @@ class Explore extends Component {
         Authorization: this.state.access_token
       },
       data:
-      { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: "pbta_histologies_filecentric", analysis: analysis } }
+      { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: d.es_index, analysis: analysis } }
     }).then(response => {
-      console.log("response:")
-      console.log(response)
-
       var data = JSON.parse(response.config.data)
-      
       console.log("parsed response")
       console.log(data)
 
-      //newCart = this.state.cartData.filter(el => el["file_ID"] !== response.data[0]["_id"])
       newCart = this.state.cartData.filter(el => el["file_ID"] !== data["_id"])
       localStorage.setItem("cart", JSON.stringify(newCart))
 
@@ -231,7 +212,7 @@ class Explore extends Component {
                         <div class="card-body"> 
                           <h4 class="card-title"> fileID : {d.file_ID} </h4>
                           <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                          <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
+                          <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
                           <button onClick={(e) => this.removeFromVRE(e, d, "vre")} class="btn btn-danger" style={{'margin-right' : "5px"}}> Unload data </button>
                           <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{'margin-right': "5px"}}> Get Details </button>
                           <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
@@ -264,7 +245,7 @@ class Explore extends Component {
                         <div class="card-body"> 
                           <h4 class="card-title"> fileID : {d.file_ID} </h4>
                           <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                          <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
+                          <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
                           <button onClick={(e) => this.removeFromVRE(e, d, "cavatica")} class="btn btn-danger" style={{"margin-right": "5px"}}> Unload data </button>
                           <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
                           <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
@@ -289,7 +270,7 @@ class Explore extends Component {
                       <div class="card-body"> 
                         <h4 class="card-title"> fileID : {d.file_ID} </h4>
                         <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                        <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
+                        <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
                         <button onClick={(e) => this.postToVRE(e, d, "vre")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to VRE </button>
                         <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
                         <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
