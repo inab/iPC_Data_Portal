@@ -202,9 +202,9 @@ class Explore extends Component {
                 </div>
                 <div className={classes.rightbox}>
                   <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC openVRE </a>
-
                 </div>
               </div>
+              <br/>
               <div class="mt-5">
                   {this.state.vreData.map((d, idx)=>{
                     return (
@@ -216,11 +216,20 @@ class Explore extends Component {
                           <button onClick={(e) => this.removeFromVRE(e, d, "vre")} class="btn btn-danger" style={{'margin-right' : "5px"}}> Unload data </button>
                           <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{'margin-right': "5px"}}> Get Details </button>
                           <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
-                            {Object.entries(this.state.details).map(([key,value])=>{
-                              return (
-                                  <div>{key} : {value.toString()}</div>
-                                );
-                            })}
+                          <div>
+                            <table class="table table-hover table-bordered">
+                              <tbody>
+                                {Object.entries(this.state.details).map(([key,value])=>{
+                                  return (    
+                                    <tr>
+                                      <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                                        <td> {value.toString()} </td>
+                                    </tr>
+                                    );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>  
                           </Modal> 
                         </div>
                       </div>)
@@ -238,6 +247,7 @@ class Explore extends Component {
                   <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
                 </div>
               </div>
+              <br/>
               <div class="mt-5">
                   {this.state.cavaticaData.map((d, idx)=>{
                     return (
@@ -249,11 +259,20 @@ class Explore extends Component {
                           <button onClick={(e) => this.removeFromVRE(e, d, "cavatica")} class="btn btn-danger" style={{"margin-right": "5px"}}> Unload data </button>
                           <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
                           <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
-                            {Object.entries(this.state.details).map(([key,value])=>{
-                              return (
-                                  <div>{key} : {value.toString()}</div>
-                                );
-                            })}
+                          <div>
+                            <table class="table table-hover table-bordered">
+                              <tbody>
+                                {Object.entries(this.state.details).map(([key,value])=>{
+                                  return (    
+                                    <tr>
+                                      <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                                        <td> {value.toString()} </td>
+                                    </tr>
+                                    );
+                                })}
+                              </tbody>
+                            </table>
+                          </div> 
                           </Modal> 
                         </div>
                       </div>)
@@ -275,11 +294,20 @@ class Explore extends Component {
                         <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
                         <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
                         <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
-                            {Object.entries(this.state.details).map(([key,value])=>{
-                              return (
-                                  <div>{key} : {value.toString()}</div>
-                                );
-                            })}
+                        <div>
+                            <table class="table table-hover table-bordered">
+                              <tbody>
+                                {Object.entries(this.state.details).map(([key,value])=>{
+                                  return (    
+                                    <tr>
+                                      <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                                        <td> {value.toString()} </td>
+                                    </tr>
+                                    );
+                                })}
+                              </tbody>
+                            </table>
+                          </div> 
                         </Modal> 
                       </div>
                     </div>)
