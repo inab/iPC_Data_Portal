@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import mainClasses from '../../App.module.css';
 import classes from './Search.module.css';
-import classes2 from '../../App.module.css';
 import {isEqual} from 'lodash';
 
 import {
@@ -83,15 +83,22 @@ class Search extends Component {
 
   render() {
 
-    var button = (<button className={classes2.ipcButton} onClick={this.cartHandler}>
+    var button = (<button className={mainClasses.ipcButton} onClick={this.cartHandler}>
                     Add to cart
                   </button>)
 
-    var buttonRefresh = (<button className={classes2.ipcButton} onClick={this.refreshProject}>
+    var buttonRefresh = (<button className={mainClasses.ipcButton} onClick={this.refreshProject}>
                           Change Project 
                          </button>)
 
     const ChooseProject = ({ index, projectId, update, projects }) => {
+
+      let projectsArr = projects.map(x => (
+        <option className={classes.option} key={x.id} value={x.id}>
+          {x.id}
+        </option>
+      ))
+
       return (
         <div
           css={`
@@ -102,14 +109,12 @@ class Search extends Component {
             justify-content: center;
           `}
         >
-          <h2
-            css={`
-              margin-top: 0;
-            `}
-          >
-            {PORTAL_NAME}
-          </h2>
+          <h3 className="ml-2 mt-0">
+            Please select project and index of your interest.
+          </h3>
+
           <select
+            className="custom-select mt-4 ml-2"
             value={projectId}
             onChange={e => {
               setValue('PROJECT_ID', e.target.value);
@@ -118,14 +123,12 @@ class Search extends Component {
               });
             }}
           >
-            <option id="version">Select a version</option>
-            {projects.map(x => (
-              <option key={x.id} value={x.id}>
-                {x.id}
-              </option>
-            ))}
+            <option className={classes.decorated} id="version">Select a project</option>
+            {projectsArr}
           </select>
+
           <select
+            className="custom-select mt-4 ml-2"
             value={index}
             onChange={e => {
               setValue('ACTIVE_INDEX', e.target.value);
@@ -141,11 +144,11 @@ class Search extends Component {
               });
             }}
           >
-            <option id="version">Select an index</option>
+            <option className={classes.option} id="version">Select an index</option>
             {projects
               .find(x => x.id === projectId)
               ?.types ?.types ?.map(x => (
-                <option key={x.index} value={x.index}>
+                <option className={classes.option} key={x.index} value={x.index}>
                   {x.index}
                 </option>
               ))}
