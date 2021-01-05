@@ -25,16 +25,24 @@ import {
 
 class Search extends Component {
   
-  shouldComponentUpdate () {
-    return false // this will lead to never re-render the component
-  }
-
   state = { 
     allRows: [],
     selectedRows: [],
     cart: [],
     rendered: false,
     refresh: false
+  }
+
+  componentDidMount() {
+    if(localStorage.getItem('cart')) {
+      console.log("pre-loaded cart")
+      console.log(localStorage.getItem('cart'))
+      this.setState({ cart : localStorage.getItem('cart') });
+    }
+  }
+
+  shouldComponentUpdate () {
+    return false // this will lead to never re-render the component
   }
   
   allRowsHandler = (arrangerData) => { 
@@ -56,6 +64,11 @@ class Search extends Component {
     console.log(e)
     var indexes = [...new Set(this.state.selectedRows)]
     var elements = this.state.allRows.filter((el) => indexes.includes(el["id"]));
+
+    if(localStorage.getItem('cart')) {
+      elements = [...elements, ...JSON.parse(localStorage.getItem('cart'))]
+    }
+
     localStorage.setItem("cart", JSON.stringify(elements));
     alert("Datasets added to the cart!")
   }
@@ -164,11 +177,6 @@ class Search extends Component {
         </div>
       );
     };
-
-    console.log("allRows:")
-    console.log(this.state.allRows)
-    console.log("selectedRows:")
-    console.log(this.state.selectedRows)
 
     return (
 
