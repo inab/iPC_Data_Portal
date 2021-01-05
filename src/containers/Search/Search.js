@@ -33,7 +33,8 @@ class Search extends Component {
     allRows: [],
     selectedRows: [],
     cart: [],
-    rendered: false
+    rendered: false,
+    refresh: false
   }
   
   allRowsHandler = (arrangerData) => { 
@@ -59,13 +60,23 @@ class Search extends Component {
     alert("Datasets added to the cart!")
   }
 
+  refreshProject = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("ACTIVE_INDEX");
+    localStorage.removeItem("PROJECT_ID");
+    localStorage.removeItem("PROJECT_ID_NAME");
+    window.location.reload(false); 
+  }
+
   render() {
 
-    //if(this.state.rendered){
-      var button = (<button className={classes2.ipcButton} onClick={this.cartHandler}>
-                      Add to cart
-                    </button>)
-    //  }
+    var button = (<button className={classes2.ipcButton} onClick={this.cartHandler}>
+                    Add to cart
+                  </button>)
+
+    var buttonRefresh = (<button className={classes2.ipcButton} onClick={this.refreshProject}>
+                          Change Project 
+                         </button>)
 
     const ChooseProject = ({ index, projectId, update, projects }) => {
       return (
@@ -148,6 +159,7 @@ class Search extends Component {
             <Table rows={this.selectedRowsHandler}
             {...props} />
             {button}
+            {buttonRefresh}
           </div>
         </div>
       );
