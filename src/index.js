@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import * as Keycloak from 'keycloak-js';
+import { Provider } from 'react-redux';
+import store from './Redux/store';
 
 let initOptions = {
     url: 'https://inb.bsc.es/auth/', realm: 'IPC', clientId: 'ipc-react-portal', onLoad: 'login-required'
@@ -19,9 +21,11 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
     }
 
     const app = (
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        <Provider store={store}>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </Provider>
     );
 
  // console.log("React");
