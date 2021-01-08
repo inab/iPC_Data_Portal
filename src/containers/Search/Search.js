@@ -24,14 +24,11 @@ import {
   Table
 } from '@arranger/components/dist/Arranger';
 
-
-
 class Search extends Component {
   
   state = { 
     allRows: [],
     selectedRows: [],
-    rendered: false,
     refresh: false
   }
 
@@ -40,10 +37,7 @@ class Search extends Component {
   }
   
   allRowsHandler = (arrangerData) => { 
-    this.setState({
-       allRows: arrangerData,
-       rendered: true
-      })
+    this.setState({ allRows: arrangerData })
   }
 
   selectedRowsHandler = (tableCheckboxes) => {
@@ -55,12 +49,8 @@ class Search extends Component {
     var indexes = [...new Set(this.state.selectedRows)]
     // Here we get complete ES documents from table selections.
     var elements = this.state.allRows.filter((el) => indexes.includes(el["id"]));
-    // Here we remove already existing elements in cart from the list filtering by document ID.
-    var cartIDs = this.props.cartItems.map(item => item.id);
-    var filtered_elements = elements.filter((el) => !cartIDs.includes(el["id"]));
-
-    this.props.addItem(filtered_elements)
-
+    // Trigger cart Redux action.
+    this.props.addItem(elements)
     alert("Datasets added to the cart!")
   }
 
@@ -218,13 +208,9 @@ class Search extends Component {
   }
 }
 
-const mapStateToProps = ({ cart: { cartItems } }) => ({
-  cartItems
-});
-
 const mapDispatchToProps = dispatch => ({
   addItem: item => dispatch(addItem(item))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Search);
+export default connect(null, mapDispatchToProps)(Search);
 
