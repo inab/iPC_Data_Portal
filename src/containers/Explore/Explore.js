@@ -4,6 +4,8 @@ import classes2 from '../../App.module.css';
 import Modal from '../../components/Navigation/Modal/Modal';
 import * as _ from 'lodash';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { addItem, removeItem } from '../../Redux/cart/cart.actions';
 
 class Explore extends Component {
 
@@ -23,12 +25,6 @@ class Explore extends Component {
   componentDidMount() {
 
     var access_token = localStorage.getItem("react-token");
-
-    var cartData = []
-
-    if(localStorage.getItem('cart')) {
-      cartData = JSON.parse(localStorage.getItem('cart'));
-    }
 
     var merged = ""
     
@@ -59,8 +55,6 @@ class Explore extends Component {
 
         let promiseArr = url_list.map(l => fetch(l).then(res => res.json()));
         Promise.all(promiseArr).then(res => {
-          console.log("res url_list")
-          console.log(res)
           var vreArr = []
           var cavaticaArr = []
           for (var j = 0; j < res.length; j++) {
@@ -73,7 +67,6 @@ class Explore extends Component {
           }
 
           this.setState({
-            cartData : cartData,
             vreData: vreArr,
             cavaticaData: cavaticaArr,
             access_token: access_token
@@ -107,21 +100,17 @@ class Explore extends Component {
       { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: d.es_index, analysis: analysis } }
     }).then(response => {
       var data = JSON.parse(response.config.data)
-      console.log("parsed response")
-      console.log(data)
-
-      newCart = this.state.cartData.filter(el => el["file_ID"] !== data["_id"])
-      localStorage.setItem("cart", JSON.stringify(newCart))
+      
+      // Update global cart state (Redux)
+      this.props.removeItem(data)
 
       if(data.metadata["analysis"] === "vre") {
         this.setState({
-          cartData: newCart,
           vreData: [...this.state.vreData, d]
         })
       }
       if(data.metadata["analysis"] === "cavatica") {
         this.setState({
-          cartData: newCart,
           cavaticaData: [...this.state.cavaticaData, d]
         })
       }
@@ -145,21 +134,20 @@ class Explore extends Component {
       { _id : d.file_ID }
     }).then(response => {
       var newdb = ""
-      var newCart = [...this.state.cartData, d]
-      localStorage.setItem("cart", JSON.stringify(newCart))
+
+      // Update global cart state (Redux)
+      this.props.addItem([d])
 
       if(analysis === "vre"){
         newdb = this.state.vreData.filter(el => el["file_ID"] !== d.file_ID)
         this.setState({
-          vreData: newdb,
-          cartData: newCart
+          vreData: newdb
         })
       }
       if(analysis === "cavatica") {
         newdb = this.state.cavaticaData.filter(el => el["file_ID"] !== d.file_ID)
         this.setState({
-          cavaticaData: newdb,
-          cartData: newCart
+          cavaticaData: newdb
         })
       }
     })
@@ -295,7 +283,7 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-        {this.state.cartData.map((d, idx)=>{
+        {this.props.cartItems.map((d, idx)=>{
           return (
             <div class="card mb-2" key={idx}>
               <div class="card-body"> 
@@ -373,4 +361,13 @@ class Explore extends Component {
   }
 }
 
-export default Explore;
+const mapStateToProps = ({ cart: { cartItems } }) => ({
+  cartItems
+});
+
+const mapDispatchToProps = dispatch => ({
+  addItem: item => dispatch(addItem(item)),
+  removeItem: item => dispatch(removeItem(item))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Explore);

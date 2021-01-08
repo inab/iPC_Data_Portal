@@ -31,8 +31,6 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
         </Provider>
     );
 
- // console.log("React");
-
     ReactDOM.render(app, document.getElementById('root'));
 
     localStorage.setItem("react-token", keycloak.token);
