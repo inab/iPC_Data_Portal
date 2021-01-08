@@ -31,17 +31,8 @@ class Search extends Component {
   state = { 
     allRows: [],
     selectedRows: [],
-    cart: [],
     rendered: false,
     refresh: false
-  }
-
-  componentDidMount() {
-    if(localStorage.getItem('cart')) {
-      console.log("pre-loaded cart")
-      console.log(localStorage.getItem('cart'))
-      this.setState({ cart : localStorage.getItem('cart') });
-    }
   }
 
   shouldComponentUpdate () {
@@ -49,8 +40,6 @@ class Search extends Component {
   }
   
   allRowsHandler = (arrangerData) => { 
-    console.log("arranger Data")
-    console.log(arrangerData)
     this.setState({
        allRows: arrangerData,
        rendered: true
@@ -58,7 +47,6 @@ class Search extends Component {
   }
 
   selectedRowsHandler = (tableCheckboxes) => {
-    console.log(tableCheckboxes)
     this.setState({selectedRows: tableCheckboxes})
   }
 
