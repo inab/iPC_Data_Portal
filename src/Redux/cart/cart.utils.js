@@ -1,5 +1,6 @@
 export const addItemToCart = (cartItems, cartItemToAdd) => {
     // NOT SURE IF THIS WILL WORK...
+
     const existingCartItem = cartItems.find(
       cartItem => cartItem === cartItemToAdd
     );
@@ -9,4 +10,5 @@ export const addItemToCart = (cartItems, cartItemToAdd) => {
     } else {
         return [...cartItems]
     }
+
 };

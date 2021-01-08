@@ -5,8 +5,6 @@ import classes from './Layout.module.css';
 class Layout extends Component {
 
     render () {
-
-
         return (
             <React.Fragment>
                 <Toolbar/>

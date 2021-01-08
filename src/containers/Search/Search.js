@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import mainClasses from '../../App.module.css';
 import classes from './Search.module.css';
 import {isEqual} from 'lodash';
+import { connect } from 'react-redux';
+import { addItem } from '../../Redux/cart/cart.actions';
 
 import {
   PORTAL_NAME,
@@ -21,6 +23,7 @@ import {
   CurrentSQON,
   Table
 } from '@arranger/components/dist/Arranger';
+
 
 
 class Search extends Component {
@@ -61,15 +64,15 @@ class Search extends Component {
 
   cartHandler = (e) => {
     e.preventDefault();
-    console.log(e)
     var indexes = [...new Set(this.state.selectedRows)]
+    // Here we get complete ES documents from table selections.
     var elements = this.state.allRows.filter((el) => indexes.includes(el["id"]));
+    // Here we remove already existing elements in cart from the list filtering by document ID.
+    var cartIDs = this.props.cartItems.map(item => item.id);
+    var filtered_elements = elements.filter((el) => !cartIDs.includes(el["id"]));
 
-    if(localStorage.getItem('cart')) {
-      elements = [...elements, ...JSON.parse(localStorage.getItem('cart'))]
-    }
+    this.props.addItem(filtered_elements)
 
-    localStorage.setItem("cart", JSON.stringify(elements));
     alert("Datasets added to the cart!")
   }
 
@@ -227,5 +230,13 @@ class Search extends Component {
   }
 }
 
-export default Search;
+const mapStateToProps = ({ cart: { cartItems } }) => ({
+  cartItems
+});
+
+const mapDispatchToProps = dispatch => ({
+  addItem: item => dispatch(addItem(item))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Search);
 
