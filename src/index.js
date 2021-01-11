@@ -6,6 +6,7 @@ import * as Keycloak from 'keycloak-js';
 import { Provider } from 'react-redux';
 import { store, persistor } from './Redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
+import FetchUserSelections from './Layout/FetchUserSelections/FetchUserSelections';
 
 let initOptions = {
     url: 'https://inb.bsc.es/auth/', realm: 'IPC', clientId: 'ipc-react-portal', onLoad: 'login-required'
@@ -25,7 +26,9 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
         <Provider store={store}>
             <BrowserRouter>
                 <PersistGate persistor={persistor}>
-                    <App />
+                    <FetchUserSelections>
+                        <App />
+                    </FetchUserSelections>
                 </PersistGate>
             </BrowserRouter>
         </Provider>

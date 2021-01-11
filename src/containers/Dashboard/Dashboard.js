@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Dashboard.module.css';
 import * as _ from 'lodash';
+import { connect } from 'react-redux';
 
 class Home extends Component {
 
@@ -58,8 +59,11 @@ class Home extends Component {
     )
   }
 }
+const mapStateToProps = ({ selections: { selections } }) => ({
+  selections
+});
 
-export default Home;
+export default connect(mapStateToProps, null)(Home);
 
 
 
