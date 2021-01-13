@@ -1,18 +1,5 @@
 export const addItemToCart = (cartItems, cartItemToAdd) => {
-
-    var cartIDs = cartItems.map(item => item.id);
-    var filtered_items = cartItemToAdd.filter((el) => !cartIDs.includes(el["id"]));
-    
+    var cartIDs = cartItems.map(item => item.file_ID);
+    var filtered_items = cartItemToAdd.filter((el) => !cartIDs.includes(el["file_ID"]));
     return [...cartItems, ...filtered_items]
-    
-    /*const existingCartItem = cartItems.find(
-      cartItem => cartItem === cartItemToAdd
-    );*/
-    /*
-    if (!existingCartItem) {
-        return [...cartItems, ...cartItemToAdd];
-    } else {
-        return [...cartItems]
-    }*/
-
 };

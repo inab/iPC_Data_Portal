@@ -17,7 +17,12 @@ const userSelectionsReducer = (state = INITIAL_STATE, action) => {
         return {
             ...state,
             isFetching: false,
-            selections: action.payload       
+            selections: action.payload   
+        };
+    case userSelectionsTypes.UPDATE_USERSELECTIONS:
+        return {
+            ...state,
+            selections: action.payload   
         };
     /*case userSelectionsTypes.FETCH_USERSELECTIONS_FAILURE:
         return {

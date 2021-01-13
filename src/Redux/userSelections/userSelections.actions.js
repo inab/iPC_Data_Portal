@@ -43,6 +43,7 @@ export const fetchUserSelections = () => {
       }
 
       let promiseArr = url_list.map(l => fetch(l).then(res => res.json()));
+
       Promise.all(promiseArr).then(res => {
         var vreArr = []
         var cavaticaArr = []
@@ -54,9 +55,20 @@ export const fetchUserSelections = () => {
               cavaticaArr.push(res[j].hits.hits[0]._source) 
             }  
         }
-        dispatch(fetchUserSelectionsSuccess(res));
+
+        var results = []
+
+        results.push(vreArr)
+        results.push(cavaticaArr)
+
+        dispatch(fetchUserSelectionsSuccess(results));
 
       })/*.catch(error => dispatch(fetchUserSelectionsFailure(error.message)));   */
     })
   }
 };
+
+export const updateUserSelections = selections => ({
+  type: userSelectionsTypes.UPDATE_USERSELECTIONS,
+  payload: selections
+})

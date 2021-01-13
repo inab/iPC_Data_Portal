@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import classes from './Dashboard.module.css';
 import * as _ from 'lodash';
-import { connect } from 'react-redux';
 
 class Home extends Component {
-
   render() {
-
     return (
       <React.Fragment>
         <div class="container-fluid">
@@ -59,11 +56,8 @@ class Home extends Component {
     )
   }
 }
-const mapStateToProps = ({ selections: { selections } }) => ({
-  selections
-});
 
-export default connect(mapStateToProps, null)(Home);
+export default Home;
 
 
 

@@ -6,8 +6,6 @@ import thunk from 'redux-thunk';
 
 const middleware = [thunk, logger];
 
-//const middleware = [logger];
-
 export const store = createStore(rootReducer, applyMiddleware(...middleware))
 export const persistor = persistStore(store);
 

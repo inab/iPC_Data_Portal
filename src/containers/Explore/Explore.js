@@ -6,13 +6,10 @@ import * as _ from 'lodash';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { addItem, removeItem } from '../../Redux/cart/cart.actions';
+import { updateUserSelections } from '../../Redux/userSelections/userSelections.actions';
 
 class Explore extends Component {
-
   state = {
-    vreData : [],
-    cavaticaData: [],
-    cartData : [],
     access_token :  "",
     session_url : "https://catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata",
     changed : false,
@@ -23,60 +20,9 @@ class Explore extends Component {
   }
 
   componentDidMount() {
-
     var access_token = localStorage.getItem("react-token");
-
-    var merged = ""
-    
-    axios({
-        method: 'get',
-        url: this.state.session_url,
-        headers: {
-          Authorization: access_token
-        }
-      }).then(response => {
-        merged = Array.prototype.concat.apply([], response.data)
-        var es_url = ""
-        var url_list = []
-        var analysis = []
-        for (var i = 0; i < merged.length; i++) {
-          es_url = "https://catalogue.ipc-project.bsc.es/es_host/" + merged[i].metadata.es_index + "/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
-          url_list.push(es_url)
-          analysis.push(merged[i].metadata.analysis)
-        }
-
-        /*
-        axios.all(url_list.map(l => axios.get(l)))
-          .then(axios.spread(function (...res) {
-            // all requests are now complete
-            // console.log(res[1].data.hits.hits[0]._source);
-            // }
-        */
-
-        let promiseArr = url_list.map(l => fetch(l).then(res => res.json()));
-        Promise.all(promiseArr).then(res => {
-          var vreArr = []
-          var cavaticaArr = []
-          for (var j = 0; j < res.length; j++) {
-              if(analysis[j] === "vre") {
-                vreArr.push(res[j].hits.hits[0]._source) 
-              } 
-              if(analysis[j] === "cavatica") {
-                cavaticaArr.push(res[j].hits.hits[0]._source) 
-              }  
-          }
-
-          this.setState({
-            vreData: vreArr,
-            cavaticaData: cavaticaArr,
-            access_token: access_token
-            })
-          })
-          .catch(error => {
-            throw error;
-        });
-        }).catch(error => {
-        throw error;
+    this.setState({
+      access_token: access_token
     });
   }
 
@@ -105,14 +51,12 @@ class Explore extends Component {
       this.props.removeItem(data)
 
       if(data.metadata["analysis"] === "vre") {
-        this.setState({
-          vreData: [...this.state.vreData, d]
-        })
+        var updated = [[...this.props.selections[0], d], this.props.selections[1]]
+        this.props.updateUserSelections(updated) 
       }
       if(data.metadata["analysis"] === "cavatica") {
-        this.setState({
-          cavaticaData: [...this.state.cavaticaData, d]
-        })
+        var updated = [this.props.selections[0], [...this.props.selections[1], d]]
+        this.props.updateUserSelections(updated) 
       }
     })
     .catch(error => {
@@ -139,16 +83,14 @@ class Explore extends Component {
       this.props.addItem([d])
 
       if(analysis === "vre"){
-        newdb = this.state.vreData.filter(el => el["file_ID"] !== d.file_ID)
-        this.setState({
-          vreData: newdb
-        })
+        newdb = this.props.selections[0].filter(el => el["file_ID"] !== d.file_ID)
+        var updated = [newdb, this.props.selections[1]]
+        this.props.updateUserSelections(updated)
       }
       if(analysis === "cavatica") {
-        newdb = this.state.cavaticaData.filter(el => el["file_ID"] !== d.file_ID)
-        this.setState({
-          cavaticaData: newdb
-        })
+        newdb = this.props.selections[1].filter(el => el["file_ID"] !== d.file_ID)
+        var updated = [this.props.selections[0], newdb]
+        this.props.updateUserSelections(updated)
       }
     })
     .catch(error => {
@@ -192,7 +134,7 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-          {this.state.vreData.map((d, idx)=>{
+          {this.props.selections[0].map((d, idx)=>{
           return (
             <div class="card mb-2" key={idx}>
               <div class="card-body"> 
@@ -241,7 +183,7 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-          {this.state.cavaticaData.map((d, idx)=>{
+          {this.props.selections[1].map((d, idx)=>{
           return (
             <div class="card mb-2" key={idx}>
               <div class="card-body"> 
@@ -361,13 +303,15 @@ class Explore extends Component {
   }
 }
 
-const mapStateToProps = ({ cart: { cartItems } }) => ({
-  cartItems
+const mapStateToProps = ({ cart: { cartItems }, selections: { selections } }) => ({
+  cartItems,
+  selections
 });
 
 const mapDispatchToProps = dispatch => ({
   addItem: item => dispatch(addItem(item)),
-  removeItem: item => dispatch(removeItem(item))
+  removeItem: item => dispatch(removeItem(item)),
+  updateUserSelections: list => dispatch(updateUserSelections(list))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Explore);
