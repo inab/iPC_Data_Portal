@@ -1,6 +1,7 @@
 import React, { Component, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Layout from './Layout/hoc/Layout';
+import './styles/sass/App.scss';
 
 const Dashboard  = React.lazy( () => import ('./containers/Dashboard/Dashboard'));
 const Explore  = React.lazy( () => import ('./containers/Explore/Explore'));
