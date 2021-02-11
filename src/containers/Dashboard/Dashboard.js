@@ -18,9 +18,9 @@ class Home extends Component {
             </div>
           </div>
           
-          <div class="row card-list">
-            <div class="col-sm-6 card-list--item pl-3 pr-3">
-              <div class="card card-style card-list--content">
+          <div class="row">
+            <div class="col-sm-6 card-cols pl-3 pr-3 mb-3">
+              <div class="card card-style card-cols">
                 <div class="card-body card-style__content">
                   <h5 class="card-title card-style__content--title"> Search Area </h5>
                   <p class="card-text card-style__content--para">
@@ -30,8 +30,8 @@ class Home extends Component {
                 </div>
               </div>
             </div>
-            <div class="col-sm-6 card-list--item pl-3 pr-3">
-              <div class="card card-style card-list--content">
+            <div class="col-sm-6 card-cols pl-3 pr-3 mb-3">
+              <div class="card card-style">
                 <div class="card-body card-style__content">
                   <h5 class="card-title card-style__content--title"> Data Management Area </h5>
                   <p class="card-text card-style__content--para">
