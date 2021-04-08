@@ -7,6 +7,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { addItem, removeItem } from '../../Redux/cart/cart.actions';
 import { updateUserSelections } from '../../Redux/userSelections/userSelections.actions';
+import { CSVLink } from "react-csv";
 
 class Explore extends Component {
   state = {
@@ -17,6 +18,7 @@ class Explore extends Component {
     index: "",
     switch: "",
     option: "",
+    dataToExport: []
   }
 
   componentDidMount() {
@@ -129,6 +131,9 @@ class Explore extends Component {
               <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
             </div>
           </div>
+          <CSVLink data={this.props.selections[0]} class="btn btn-primary" style={{"margin-right": "5px"}}>
+            Export CSV
+          </CSVLink>
         </div>
       )
 
@@ -178,6 +183,9 @@ class Explore extends Component {
               <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
             </div>
           </div>
+          <CSVLink data={this.props.selections[1]} class="btn btn-primary" style={{"margin-right": "5px"}}>
+            Export CSV
+          </CSVLink>
         </div>
       )
 
@@ -220,6 +228,9 @@ class Explore extends Component {
         <div class="mt-5">
           <h5> Preselected data sets from catalogue: </h5>
           <p> Inspect and/or load data sets for their analysis. </p>
+          <CSVLink data={this.props.cartItems} class="btn btn-primary" style={{"margin-right": "5px"}}>
+            Export CSV
+          </CSVLink>
         </div>
       )
 
@@ -236,7 +247,7 @@ class Explore extends Component {
                 <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
                 <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
                 <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
-                <div>
+                  <div>
                     <table class="table table-hover table-bordered">
                       <tbody>
                         {Object.entries(this.state.details).map(([key,value])=>{
@@ -249,7 +260,7 @@ class Explore extends Component {
                         })}
                       </tbody>
                     </table>
-                  </div> 
+                  </div>
                 </Modal> 
               </div>
             </div>)
