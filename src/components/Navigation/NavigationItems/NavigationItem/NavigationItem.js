@@ -13,10 +13,10 @@ const navigationItem = ( props ) => {
         </li>            
     ) 
 
-    // This can be improved..
+    var logout = "https://inb.bsc.es/auth/realms/IPC/protocol/openid-connect/logout?redirect_uri=https://catalogue.ipc-project.bsc.es"
     
     if(role == "admin") {
-        if(props.link == "/adminpanel" ||  props.link == "/logout") {
+        if(props.link == "/adminpanel" ||  props.link == logout) {
             return htmlLink
         } else {
             return (null)
@@ -24,7 +24,7 @@ const navigationItem = ( props ) => {
     }
     
     if(role == "user") {
-        if(props.link != "/adminpanel") {
+        if(props.link != "/adminpanel" ||  props.link == logout) {
             return htmlLink
         } else {
             return (null)

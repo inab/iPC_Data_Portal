@@ -2,6 +2,8 @@ import React from 'react';
 //import classes from './NavigationItems.module.css';
 import NavigationItem from './NavigationItem/NavigationItem';
 
+const logout = "https://inb.bsc.es/auth/realms/IPC/protocol/openid-connect/logout?redirect_uri=https://catalogue.ipc-project.bsc.es"
+
 const navigationItems = () => (
     <ul class="navbar-nav ml-auto">
         <NavigationItem link="/" exact > Dashboard </NavigationItem>
@@ -9,7 +11,7 @@ const navigationItems = () => (
         <NavigationItem link="/filerepository" exact> File Repository </NavigationItem>
         <NavigationItem link="/requestaccess" exact> My Requests </NavigationItem>
         <NavigationItem link="/adminpanel" exact> Admin panel </NavigationItem>
-        <NavigationItem link="https://inb.bsc.es/auth/realms/IPC/protocol/openid-connect/logout?redirect_uri=https://catalogue.ipc-project.bsc.es" exact> Logout </NavigationItem>
+        <NavigationItem link={logout} exact> Logout </NavigationItem>
     </ul>
 );
 
