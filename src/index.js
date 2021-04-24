@@ -36,6 +36,21 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
 
     ReactDOM.render(app, document.getElementById('root'));
 
+    // Check user roles
+
+    var roles = [];
+
+    // Reducer??
+    if(keycloak["tokenParsed"]["resource_access"].hasOwnProperty("permissions-api")){
+        roles = keycloak["tokenParsed"]["resource_access"]["permissions-api"]["roles"]
+    }
+    
+    if(roles.includes("admin")){
+        localStorage.setItem("role", 'admin');
+    } else {
+        localStorage.setItem("role", 'user');
+    }
+
     localStorage.setItem("react-token", keycloak.token);
     localStorage.setItem("react-refresh-token", keycloak.refreshToken);
 

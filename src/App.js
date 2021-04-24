@@ -1,19 +1,27 @@
 import React, { Component, Suspense } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import Layout from './Layout/hoc/Layout';
 import './styles/sass/App.scss';
+import { connect } from 'react-redux';
+import Authorization from './Layout/Authorization/Authorization';
 
 const Dashboard  = React.lazy( () => import ('./containers/Dashboard/Dashboard'));
 const Explore  = React.lazy( () => import ('./containers/Explore/Explore'));
 const FileRepository = React.lazy( () => import ('./containers/FileRepository/FileRepository'));
 const Members  = React.lazy( () => import ('./containers/Members/Members'));
 const Resources  = React.lazy( () => import ('./containers/Resources/Resources'));
+const RequestAccess  = React.lazy( () => import ('./containers/RequestAccess/RequestAccess'));
+const AdminPanel  = React.lazy( () => import ('./containers/Admin/AdminPanel'));
 
+// Protect routes with a HOC AuthZ Class.
+
+const Admin = Authorization(['admin'])
+const AdminDashboard = Admin(AdminPanel)
 
 class App extends Component {
   constructor(props){
     super(props)
-
+    this.state = { init: false };
   }
 
   render() {
@@ -41,6 +49,20 @@ class App extends Component {
                 <FileRepository />
               </Suspense>
               )} />
+            
+            <Route path="/requestaccess" exact
+              render={() => (<Suspense fallback={<div> Loading Request Access page... </div>} >
+                <RequestAccess />
+              </Suspense>
+              )} /> 
+
+            {/* Protect routes with a HOC AuthZ method. */}
+
+            <Route path="/adminpanel" exact 
+                   render={() => (<Suspense fallback={<div> Loading Admin panel page... </div>} >
+                   <AdminDashboard />
+                   </Suspense>
+            )} /> 
 
           </Switch>
 
