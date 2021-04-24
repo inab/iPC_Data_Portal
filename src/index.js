@@ -34,8 +34,6 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
         </Provider>
     );
 
-    ReactDOM.render(app, document.getElementById('root'));
-
     // Check user roles
 
     var roles = [];
@@ -43,8 +41,11 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
     // Reducer??
     if(keycloak["tokenParsed"]["resource_access"].hasOwnProperty("permissions-api")){
         roles = keycloak["tokenParsed"]["resource_access"]["permissions-api"]["roles"]
+    } else{
+        roles = "user"
     }
-    
+    console.log(roles)
+
     if(roles.includes("admin")){
         localStorage.setItem("role", 'admin');
     } else {
@@ -66,6 +67,8 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
             console.error('Failed to refresh token');
         });
     }, 60000)
+
+    ReactDOM.render(app, document.getElementById('root'));
 
 }).error(() => {
     console.error("Authenticated Failed");
