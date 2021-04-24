@@ -7,10 +7,12 @@ const navigationItems = () => (
         <NavigationItem link="/" exact > Dashboard </NavigationItem>
         <NavigationItem link="/explore" exact> Data Management </NavigationItem>
         <NavigationItem link="/filerepository" exact> File Repository </NavigationItem>
-        {/*<NavigationItem link="/members" exact> Members </NavigationItem>
-        <NavigationItem link="/resources" exact> Resources </NavigationItem>*/}
-        <NavigationItem link="https://inb.bsc.es/auth/realms/IPC/protocol/openid-connect/logout" exact> Logout </NavigationItem>
+        <NavigationItem link="/requestaccess" exact> My Requests </NavigationItem>
+        <NavigationItem link="/adminpanel" exact> Admin panel </NavigationItem>
+        <NavigationItem link="https://inb.bsc.es/auth/realms/IPC/protocol/openid-connect/logout?redirect_uri=https://catalogue.ipc-project.bsc.es" exact> Logout </NavigationItem>
     </ul>
 );
+
+// Here I will have to use Redux for storing admin role status
 
 export default navigationItems;
