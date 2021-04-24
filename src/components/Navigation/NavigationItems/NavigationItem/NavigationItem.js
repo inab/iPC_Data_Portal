@@ -1,12 +1,36 @@
 import React from 'react';
 import classes from './NavigationItem.module.css';
 
-const navigationItem = ( props ) => (
-    <li>
+const navigationItem = ( props ) => {
+
+    var role = localStorage.getItem("role");
+
+    var htmlLink = (
+        <li>
         <a  href={props.link}
             className={classes.toolbarFormatting}
             >{props.children}</a>
-    </li>
-);
+        </li>            
+    ) 
+
+    // This can be improved..
+    
+    if(role == "admin") {
+        if(props.link == "/adminpanel" ||  props.link == "/logout") {
+            return htmlLink
+        } else {
+            return (null)
+        }
+    }
+    
+    if(role == "user") {
+        if(props.link != "/adminpanel") {
+            return htmlLink
+        } else {
+            return (null)
+        } 
+    }
+    
+};
 
 export default navigationItem;
