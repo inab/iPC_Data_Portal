@@ -277,8 +277,8 @@ class Explore extends Component {
                 <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
                 <button onClick={(e) => this.postToVRE(e, d, "vre")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to VRE </button>
                 <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
-                <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
+                <button onClick={(e) => this.getDetails(e, idx, "allowedItems", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
+                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="allowedItems">
                   <div>
                     <table class="table table-hover table-bordered">
                       <tbody>
@@ -304,8 +304,8 @@ class Explore extends Component {
                 <h4 class="card-title"> fileID : {d.file_ID} </h4>
                 <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
                 <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
+                <button onClick={(e) => this.getDetails(e, idx, "restrictedItems", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
+                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="restrictedItems">
                   <div>
                     <table class="table table-hover table-bordered">
                       <tbody>
