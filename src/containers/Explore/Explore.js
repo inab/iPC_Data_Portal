@@ -12,20 +12,48 @@ import { CSVLink } from "react-csv";
 class Explore extends Component {
   state = {
     access_token :  "",
-    session_url : "https://catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata",
+    session_url : "https://dev-catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata",
     changed : false,
     details : [],
     index: "",
     switch: "",
     option: "",
-    dataToExport: []
+    dataToExport: [],
+    allowedItems: [],
+    restrictedItems: []
   }
 
   componentDidMount() {
     var access_token = localStorage.getItem("react-token");
-    this.setState({
-      access_token: access_token
-    });
+
+    if(this.props.cartItems){
+      let publicDS = this.props.cartItems.filter(item => item.access == "public")
+
+      axios({
+        method: 'get',
+        url: "https://dev-catalogue.ipc-project.bsc.es/permissions/api/user/documents",
+        headers: {
+          Authorization: "Bearer " + access_token
+        }
+      }).then(response => {
+        let allowedIds = response.data[0].permissions.map(item => item.fileId);
+        let allowedItems = this.props.cartItems.filter((item) => allowedIds.includes(item["file_ID"]));
+        let restrictedItems = this.props.cartItems.filter((item) => !allowedIds.includes(item["file_ID"]));
+        
+        if(publicDS.length != 0) {
+          allowedItems.push(publicDS)
+        }
+
+        this.setState({
+          access_token: access_token,
+          allowedItems: allowedItems,
+          restrictedItems: restrictedItems
+        });
+      })
+      .catch(error => {
+        throw error;
+      }); 
+    }
   }
 
   selectionHandler = (e, option) => {
@@ -118,6 +146,8 @@ class Explore extends Component {
 
     let header = ""
     let body = ""
+
+    console.log(this.state.allowedItems)
     
     if(this.state.option === "vre") {
       header = (
@@ -224,10 +254,11 @@ class Explore extends Component {
     }
 
     else if (this.state.option === "preselected") {
+
       header = (
         <div class="mt-5">
           <h5> Preselected data sets from catalogue: </h5>
-          <p> Inspect and/or load data sets for their analysis. </p>
+          <p> Inspect, load data sets for their analysis, or make access requests. </p>
           <CSVLink data={this.props.cartItems} class="btn btn-primary" style={{"margin-right": "5px"}}>
             Export CSV
           </CSVLink>
@@ -236,7 +267,8 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-        {this.props.cartItems.map((d, idx)=>{
+        {/*{this.props.cartItems.map((d, idx)=>{ */}
+        {this.state.allowedItems.map((d, idx)=>{
           return (
             <div class="card mb-2" key={idx}>
               <div class="card-body"> 
@@ -265,6 +297,36 @@ class Explore extends Component {
               </div>
             </div>)
           })}
+        {this.state.restrictedItems.map((d, idx)=>{
+          return (
+            <div class="card mb-2" key={idx}>
+              <div class="card-body"> 
+                <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                <button onClick={(e) => this.getDetails(e, idx, "cart", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
+                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cart">
+                  <div>
+                    <table class="table table-hover table-bordered">
+                      <tbody>
+                        {Object.entries(this.state.details).map(([key,value])=>{
+                          return (    
+                            <tr>
+                              <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                                <td> {value.toString()} </td>
+                            </tr>
+                            );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </Modal> 
+                <button class="btn btn-warning" style={{"margin-right": "5px"}}> Request Access </button>
+              </div>
+            </div>)
+          })}
+
+          {/*
           <div class="card mb-2">
                 <div class="card-body"> 
                   <h4 class="card-title"> fileID : REQUEST_DEMO_ID </h4>
@@ -275,8 +337,11 @@ class Explore extends Component {
                   <button class="btn btn-warning" style={{"margin-right": "5px"}}> Request Access </button>                                
                 </div>
           </div>
-          </div>    
+          */}
+        </div>    
       )
+
+
     }
     
     return (
