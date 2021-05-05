@@ -40,7 +40,7 @@ class Explore extends Component {
       }).then(response => {
         let allowedIds = response.data[0].permissions.map(item => item.fileId);
         let allowedItems = this.props.cartItems.filter((item) => allowedIds.includes(item["file_ID"]));
-        let restrictedItems = this.props.cartItems.filter((item) => !allowedIds.includes(item["file_ID"]));
+        let restrictedItems = this.props.cartItems.filter((item) => !allowedIds.includes(item["file_ID"]) && item["access"] != "public");
         allowedItems.push(publicDS)
         allowedItems = allowedItems.reduce((a, b) => a.concat(b), []);
 
