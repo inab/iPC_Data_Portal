@@ -28,6 +28,8 @@ class Explore extends Component {
 
     if(this.props.cartItems){
       let publicDS = this.props.cartItems.filter(item => item.access == "public")
+      console.log("publicDS")
+      console.log(publicDS)
 
       axios({
         method: 'get',
@@ -39,10 +41,8 @@ class Explore extends Component {
         let allowedIds = response.data[0].permissions.map(item => item.fileId);
         let allowedItems = this.props.cartItems.filter((item) => allowedIds.includes(item["file_ID"]));
         let restrictedItems = this.props.cartItems.filter((item) => !allowedIds.includes(item["file_ID"]));
-        
-        if(publicDS.length != 0) {
-          allowedItems.push(publicDS)
-        }
+        allowedItems.push(publicDS)
+        allowedItems = allowedItems.reduce((a, b) => a.concat(b), []);
 
         this.setState({
           access_token: access_token,
