@@ -9,7 +9,7 @@ import { addItem, removeItem } from '../../Redux/cart/cart.actions';
 import { updateUserSelections } from '../../Redux/userSelections/userSelections.actions';
 import { CSVLink } from "react-csv";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import 'react-tabs/style/react-tabs.scss';
 
 class Explore extends Component {
   state = {
@@ -59,7 +59,6 @@ class Explore extends Component {
 
   selectionHandler = (option) => {
     let name = ""
-    console.log(option)
     switch (option) {
       case 0:
         name = "preselected";
@@ -70,7 +69,11 @@ class Explore extends Component {
       case 2:
         name = "cavatica";
         break;
+      case 3:
+        name = "export";
+        break;
     }
+
     this.setState({
       option: name,
       selectedTab: option })
@@ -162,14 +165,11 @@ class Explore extends Component {
 
     let header = ""
     let body = ""
-
-    console.log(this.state.allowedItems)
     
     if(this.state.option === "vre") {
       if(this.props.selections[0].length != 0){
         header = (
           <div class="mt-5">
-            <h5> Data sets available to the iPC VRE: </h5>
             <div class="mb-5"> 
               <div className={classes.leftbox}>
                 <p> Inspect and/or remove already loaded data sets into VRE. </p>
@@ -178,9 +178,6 @@ class Explore extends Component {
                 <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
               </div>
             </div>
-            <CSVLink data={this.props.selections[0]} class="btn btn-primary" style={{"margin-right": "5px"}}>
-              Export CSV
-            </CSVLink>
           </div>
         )
       } else {
@@ -229,7 +226,6 @@ class Explore extends Component {
       if(this.props.selections[1].length != 0){
         header = (
           <div class="mt-5">
-            <h5> Data sets available to Cavatica: </h5>
             <div class="mb-5"> 
               <div className={classes.leftbox}>
                 <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
@@ -238,9 +234,6 @@ class Explore extends Component {
                 <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
               </div>
             </div>
-            <CSVLink data={this.props.selections[1]} class="btn btn-primary" style={{"margin-right": "5px"}}>
-              Export CSV
-            </CSVLink>
           </div>
         )
       } else {
@@ -296,19 +289,13 @@ class Explore extends Component {
       } else {
         header = (
           <div class="mt-5">
-            <h5> Preselected data sets from catalogue: </h5>
             <p> Inspect, load data sets for their analysis, or make access requests. </p>
-            <CSVLink data={this.props.cartItems} class="btn btn-primary" style={{"margin-right": "5px"}}>
-              Export CSV
-            </CSVLink>
           </div>
         )
       }
 
-
       body = (
         <div class="mt-5">
-        {/*{this.props.cartItems.map((d, idx)=>{ */}
         {this.state.allowedItems.map((d, idx)=>{
           return (
             <div class="card mb-2" key={idx}>
@@ -368,8 +355,37 @@ class Explore extends Component {
           })}
         </div>    
       )
+    }
 
-
+    if(this.state.option === "export") {
+      console.log("EXPORT")
+      header = (
+        <div class="mt-5 text-center">
+          <p> <strong> Here you can download metadata associated to the catalogue selections. </strong> </p>
+        </div>
+      )
+      body = (
+        <div class="container">
+          <div class="row mt-5">
+              <table class="table table-hover">             
+                <tbody>
+                  <tr>
+                    <th scope="row" style={{"color": "#005076"}}> Virtual research environment </th>
+                    <td> <CSVLink data={this.props.selections[0]}> Download </CSVLink> </td>
+                  </tr> 
+                  <tr>
+                    <th scope="row" style={{"color": "#005076"}}> Cavatica </th>
+                    <td> <CSVLink data={this.props.selections[1]}> Download </CSVLink> </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" style={{"color": "#005076"}}> Preselected (cart) </th>
+                    <td> <CSVLink data={this.props.cartItems}> Download </CSVLink> </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+        </div>
+      )
     }
     
     return (
@@ -384,13 +400,17 @@ class Explore extends Component {
               <p style={{ "color" : "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
               <br/>  
               <section> 
-                {/*<Tabs defaultIndex={0} onSelect={(e, index) => this.selectionHandler(e, index)}>*/}
                 <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.selectionHandler(index)}>
                   <TabList>
                     <Tab> Preselected from catalogue </Tab>
                     <Tab> Virtual Research Environment </Tab>
                     <Tab> Cavatica </Tab>
-                    </TabList>
+                    <Tab> Export metadata </Tab>
+                  </TabList>
+                  <TabPanel>
+                    {header}
+                    {body}
+                  </TabPanel>
                   <TabPanel>
                     {header}
                     {body}
@@ -404,23 +424,7 @@ class Explore extends Component {
                     {body}
                   </TabPanel>
                 </Tabs>
-                  {/*
-                <table class="table table-bordered table-sm text-center">
-                  <tbody>
-                    <tr>
-                      <th scope="row"> Available datasets </th>
-                        <td className={classes.listItem} onClick={(e) => this.selectionHandler(e, "vre")}> Virtual Research Environment </td>
-                        <td className={classes.listItem} onClick={(e) => this.selectionHandler(e, "cavatica")}> Cavatica </td>
-                        <td className={classes.listItem} onClick={(e) => this.selectionHandler(e, "preselected")}> Preselected from catalogue </td>
-                    </tr>
-                  </tbody>
-                </table>
-                  */}
               </section>
-              {/*<section>
-                {header}
-                {body}
-              </section> */}
             </div>
           </div>
         </div>
