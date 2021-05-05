@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import { addItem, removeItem } from '../../Redux/cart/cart.actions';
 import { updateUserSelections } from '../../Redux/userSelections/userSelections.actions';
 import { CSVLink } from "react-csv";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 class Explore extends Component {
   state = {
@@ -17,7 +19,8 @@ class Explore extends Component {
     details : [],
     index: "",
     switch: "",
-    option: "",
+    option: "preselected",
+    selectedTab: 0,
     dataToExport: [],
     allowedItems: [],
     restrictedItems: []
@@ -28,8 +31,6 @@ class Explore extends Component {
 
     if(this.props.cartItems){
       let publicDS = this.props.cartItems.filter(item => item.access == "public")
-      console.log("publicDS")
-      console.log(publicDS)
 
       axios({
         method: 'get',
@@ -56,8 +57,23 @@ class Explore extends Component {
     }
   }
 
-  selectionHandler = (e, option) => {
-    this.setState({option: option})
+  selectionHandler = (option) => {
+    let name = ""
+    console.log(option)
+    switch (option) {
+      case 0:
+        name = "preselected";
+        break;
+      case 1:
+        name = "vre";
+        break;
+      case 2:
+        name = "cavatica";
+        break;
+    }
+    this.setState({
+      option: name,
+      selectedTab: option })
   }
 
   postToVRE = async (e, d, analysis) => {
@@ -350,19 +366,6 @@ class Explore extends Component {
               </div>
             </div>)
           })}
-
-          {/*
-          <div class="card mb-2">
-                <div class="card-body"> 
-                  <h4 class="card-title"> fileID : REQUEST_DEMO_ID </h4>
-                  <p class="card-text"> <i> file_locator : REQUEST_DEMO_LOCATOR </i> </p>
-                  <p class="card-text"> <i> es_host : pbta_histologies_filecentric </i> </p>
-                  <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to VRE </button>
-                  <button disabled class="btn btn-secondary" style={{"margin-right": "5px"}}> Load to Cavatica </button>
-                  <button class="btn btn-warning" style={{"margin-right": "5px"}}> Request Access </button>                                
-                </div>
-          </div>
-          */}
         </div>    
       )
 
@@ -381,6 +384,27 @@ class Explore extends Component {
               <p style={{ "color" : "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
               <br/>  
               <section> 
+                {/*<Tabs defaultIndex={0} onSelect={(e, index) => this.selectionHandler(e, index)}>*/}
+                <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.selectionHandler(index)}>
+                  <TabList>
+                    <Tab> Preselected from catalogue </Tab>
+                    <Tab> Virtual Research Environment </Tab>
+                    <Tab> Cavatica </Tab>
+                    </TabList>
+                  <TabPanel>
+                    {header}
+                    {body}
+                  </TabPanel>
+                  <TabPanel>
+                    {header}
+                    {body}
+                  </TabPanel>
+                  <TabPanel>
+                    {header}
+                    {body}
+                  </TabPanel>
+                </Tabs>
+                  {/*
                 <table class="table table-bordered table-sm text-center">
                   <tbody>
                     <tr>
@@ -391,11 +415,12 @@ class Explore extends Component {
                     </tr>
                   </tbody>
                 </table>
+                  */}
               </section>
-              <section>
+              {/*<section>
                 {header}
                 {body}
-              </section>
+              </section> */}
             </div>
           </div>
         </div>
