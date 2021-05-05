@@ -150,22 +150,30 @@ class Explore extends Component {
     console.log(this.state.allowedItems)
     
     if(this.state.option === "vre") {
-      header = (
-        <div class="mt-5">
-          <h5> Data sets available to the iPC VRE: </h5>
-          <div class="mb-5"> 
-            <div className={classes.leftbox}>
-              <p> Inspect and/or remove already loaded data sets into VRE. </p>
+      if(this.props.selections[0].length != 0){
+        header = (
+          <div class="mt-5">
+            <h5> Data sets available to the iPC VRE: </h5>
+            <div class="mb-5"> 
+              <div className={classes.leftbox}>
+                <p> Inspect and/or remove already loaded data sets into VRE. </p>
+              </div>
+              <div className={classes.rightbox}>
+                <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
+              </div>
             </div>
-            <div className={classes.rightbox}>
-              <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
-            </div>
+            <CSVLink data={this.props.selections[0]} class="btn btn-primary" style={{"margin-right": "5px"}}>
+              Export CSV
+            </CSVLink>
           </div>
-          <CSVLink data={this.props.selections[0]} class="btn btn-primary" style={{"margin-right": "5px"}}>
-            Export CSV
-          </CSVLink>
-        </div>
-      )
+        )
+      } else {
+        header = (
+          <div class="mt-5 text-center">
+            <p> <strong> No datasets have been imported to the Virtual Research Environment. </strong> </p>
+          </div>
+        )
+      }
 
       body = (
         <div class="mt-5">
@@ -202,22 +210,30 @@ class Explore extends Component {
     } 
     
     else if (this.state.option === "cavatica") {
-      header = (
-        <div class="mt-5">
-          <h5> Data sets available to Cavatica: </h5>
-          <div class="mb-5"> 
-            <div className={classes.leftbox}>
-              <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
+      if(this.props.selections[1].length != 0){
+        header = (
+          <div class="mt-5">
+            <h5> Data sets available to Cavatica: </h5>
+            <div class="mb-5"> 
+              <div className={classes.leftbox}>
+                <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
+              </div>
+              <div className={classes.rightbox}>
+                <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
+              </div>
             </div>
-            <div className={classes.rightbox}>
-              <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
-            </div>
+            <CSVLink data={this.props.selections[1]} class="btn btn-primary" style={{"margin-right": "5px"}}>
+              Export CSV
+            </CSVLink>
           </div>
-          <CSVLink data={this.props.selections[1]} class="btn btn-primary" style={{"margin-right": "5px"}}>
-            Export CSV
-          </CSVLink>
-        </div>
-      )
+        )
+      } else {
+        header = (
+          <div class="mt-5 text-center">
+            <p> <strong> No datasets have been imported to Cavatica. </strong> </p>
+          </div>
+        )
+      }
 
       body = (
         <div class="mt-5">
@@ -255,15 +271,24 @@ class Explore extends Component {
 
     else if (this.state.option === "preselected") {
 
-      header = (
-        <div class="mt-5">
-          <h5> Preselected data sets from catalogue: </h5>
-          <p> Inspect, load data sets for their analysis, or make access requests. </p>
-          <CSVLink data={this.props.cartItems} class="btn btn-primary" style={{"margin-right": "5px"}}>
-            Export CSV
-          </CSVLink>
-        </div>
-      )
+      if(this.props.cartItems.length == 0) {
+        header = (
+          <div class="mt-5 text-center">
+            <p> <strong> The cart items list is empty. Please go first to the <a href="/filerepository"> File Repository </a> section and select data you might be interested in. </strong> </p>
+          </div>
+        )
+      } else {
+        header = (
+          <div class="mt-5">
+            <h5> Preselected data sets from catalogue: </h5>
+            <p> Inspect, load data sets for their analysis, or make access requests. </p>
+            <CSVLink data={this.props.cartItems} class="btn btn-primary" style={{"margin-right": "5px"}}>
+              Export CSV
+            </CSVLink>
+          </div>
+        )
+      }
+
 
       body = (
         <div class="mt-5">
