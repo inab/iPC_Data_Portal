@@ -13,48 +13,13 @@ import 'react-tabs/style/react-tabs.scss';
 
 class Explore extends Component {
   state = {
-    access_token :  "",
-    session_url : "https://dev-catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata",
     changed : false,
     details : [],
     index: "",
     switch: "",
     option: "preselected",
     selectedTab: 0,
-    dataToExport: [],
-    allowedItems: [],
-    restrictedItems: []
-  }
-
-  componentDidMount() {
-    var access_token = localStorage.getItem("react-token");
-
-    if(this.props.cartItems){
-      let publicDS = this.props.cartItems.filter(item => item.access == "public")
-
-      axios({
-        method: 'get',
-        url: "https://dev-catalogue.ipc-project.bsc.es/permissions/api/user/documents",
-        headers: {
-          Authorization: "Bearer " + access_token
-        }
-      }).then(response => {
-        let allowedIds = response.data[0].permissions.map(item => item.fileId);
-        let allowedItems = this.props.cartItems.filter((item) => allowedIds.includes(item["file_ID"]));
-        let restrictedItems = this.props.cartItems.filter((item) => !allowedIds.includes(item["file_ID"]) && item["access"] != "public");
-        allowedItems.push(publicDS)
-        allowedItems = allowedItems.reduce((a, b) => a.concat(b), []);
-
-        this.setState({
-          access_token: access_token,
-          allowedItems: allowedItems,
-          restrictedItems: restrictedItems
-        });
-      })
-      .catch(error => {
-        throw error;
-      }); 
-    }
+    dataToExport: []
   }
 
   selectionHandler = (option) => {
@@ -87,9 +52,9 @@ class Explore extends Component {
 
     axios({
       method: 'post',
-      url: this.state.session_url,
+      url: 'https://dev-catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata',
       headers: {
-        Authorization: this.state.access_token
+        Authorization: localStorage.getItem("react-token")
       },
       data:
       { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: d.es_index, analysis: analysis } }
@@ -119,9 +84,9 @@ class Explore extends Component {
     
     axios({
       method: 'delete',
-      url: this.state.session_url,
+      url: 'https://dev-catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata',
       headers: {
-        Authorization: this.state.access_token
+        Authorization: localStorage.getItem("react-token")
       },
       data:
       { _id : d.file_ID }
@@ -170,15 +135,15 @@ class Explore extends Component {
       if(this.props.selections[0].length != 0){
         header = (
           <div class="mt-5">
-            <div class="mb-5"> 
               <div className={classes.leftbox}>
                 <p> Inspect and/or remove already loaded data sets into VRE. </p>
               </div>
               <div className={classes.rightbox}>
                 <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
+                <br/>
               </div>
-            </div>
           </div>
+          
         )
       } else {
         header = (
@@ -192,7 +157,7 @@ class Explore extends Component {
         <div class="mt-5">
           {this.props.selections[0].map((d, idx)=>{
           return (
-            <div class="card mb-2" key={idx}>
+            <div class="card mt-3 mb-2" key={idx}>
               <div class="card-body"> 
                 <h4 class="card-title"> fileID : {d.file_ID} </h4>
                 <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
@@ -226,14 +191,13 @@ class Explore extends Component {
       if(this.props.selections[1].length != 0){
         header = (
           <div class="mt-5">
-            <div class="mb-5"> 
               <div className={classes.leftbox}>
                 <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
               </div>
               <div className={classes.rightbox}>
                 <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
+                <br/>
               </div>
-            </div>
           </div>
         )
       } else {
@@ -248,7 +212,7 @@ class Explore extends Component {
         <div class="mt-5">
           {this.props.selections[1].map((d, idx)=>{
           return (
-            <div class="card mb-2" key={idx}>
+            <div class="card mt-3 mb-2" key={idx}>
               <div class="card-body"> 
                 <h4 class="card-title"> fileID : {d.file_ID} </h4>
                 <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
@@ -280,7 +244,8 @@ class Explore extends Component {
 
     else if (this.state.option === "preselected") {
 
-      if(this.props.cartItems.length == 0) {
+      //if(this.props.cartItems.length == 0) {
+        if(this.props.cartWhitelist.length == 0 && this.props.cartBlacklist.length == 0) {
         header = (
           <div class="mt-5 text-center">
             <p> <strong> The cart items list is empty. Please go first to the <a href="/filerepository"> File Repository </a> section and select data you might be interested in. </strong> </p>
@@ -296,9 +261,9 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-        {this.state.allowedItems.map((d, idx)=>{
+        {this.props.cartWhitelist.map((d, idx)=>{
           return (
-            <div class="card mb-2" key={idx}>
+            <div class="card mt-3 mb-2" key={idx}>
               <div class="card-body"> 
                 <h4 class="card-title"> fileID : {d.file_ID} </h4>
                 <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
@@ -325,9 +290,9 @@ class Explore extends Component {
               </div>
             </div>)
           })}
-        {this.state.restrictedItems.map((d, idx)=>{
+        {this.props.cartBlacklist.map((d, idx)=>{
           return (
-            <div class="card mb-2" key={idx}>
+            <div class="card mt-3 mb-2" key={idx}>
               <div class="card-body"> 
                 <h4 class="card-title"> fileID : {d.file_ID} </h4>
                 <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
@@ -358,7 +323,6 @@ class Explore extends Component {
     }
 
     if(this.state.option === "export") {
-      console.log("EXPORT")
       header = (
         <div class="mt-5 text-center">
           <p> <strong> Here you can download metadata associated to the catalogue selections. </strong> </p>
@@ -413,10 +377,12 @@ class Explore extends Component {
                   </TabPanel>
                   <TabPanel>
                     {header}
+                    <br/>
                     {body}
                   </TabPanel>
                   <TabPanel>
                     {header}
+                    <br/>
                     {body}
                   </TabPanel>
                   <TabPanel>
@@ -433,9 +399,10 @@ class Explore extends Component {
   }
 }
 
-const mapStateToProps = ({ cart: { cartItems }, selections: { selections } }) => ({
-  cartItems,
-  selections
+const mapStateToProps = ({ cart: { cartWhitelist, cartBlacklist }, selections: { selections } }) => ({
+  selections,
+  cartWhitelist,
+  cartBlacklist
 });
 
 const mapDispatchToProps = dispatch => ({
