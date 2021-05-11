@@ -342,8 +342,12 @@ class Explore extends Component {
                     <td> <CSVLink data={this.props.selections[1]}> Download </CSVLink> </td>
                   </tr>
                   <tr>
-                    <th scope="row" style={{"color": "#005076"}}> Preselected (cart) </th>
-                    <td> <CSVLink data={this.props.cartItems}> Download </CSVLink> </td>
+                    <th scope="row" style={{"color": "#005076"}}> Preselected with access (cart) </th>
+                    <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" style={{"color": "#005076"}}> Preselected without access (cart) </th>
+                    <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
                   </tr>
                 </tbody>
               </table>
