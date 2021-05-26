@@ -22,13 +22,12 @@ export const addItem = (list) => {
     // First we check all user permissions.
     axios({
       method: 'get',
-      url: "https://dev-catalogue.ipc-project.bsc.es/permissions/api/user/documents",
+      url: "https://dev-catalogue.ipc-project.bsc.es/permissions/api/me/permissions?format=PLAIN",
       headers: {
         Authorization: "Bearer " + access_token
       }
     }).then(response => {
-
-      let allowedIds = response.data[0].permissions.map(item => item.fileId);
+      let allowedIds = response.data.map(visa => JSON.parse(visa).ga4gh_visa_v1.value)
 
       let allowedItems = list.filter((item) => allowedIds.includes(item["file_ID"]) || item["access"] == "public");
 
