@@ -10,3 +10,7 @@ export const store = createStore(rootReducer, applyMiddleware(...middleware))
 export const persistor = persistStore(store);
 
 export default {store, persistor}
+
+if (window.Cypress) {
+    window.store = store
+}
