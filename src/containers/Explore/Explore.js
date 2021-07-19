@@ -49,10 +49,11 @@ class Explore extends Component {
     var res = ""
     var newCart = ""
     var oldCart = ""
+    const { REACT_APP_URL } = process.env
 
     axios({
       method: 'post',
-      url: 'https://dev-catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata',
+      url: REACT_APP_URL + '/catalogue_outbox/api/v1/metadata',
       headers: {
         Authorization: localStorage.getItem("react-token")
       },
@@ -81,10 +82,12 @@ class Explore extends Component {
 
   removeFromVRE = async (e, d, analysis) => {
     e.preventDefault();
+
+    const { REACT_APP_URL } = process.env
     
     axios({
       method: 'delete',
-      url: 'https://dev-catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata',
+      url: REACT_APP_URL + '/catalogue_outbox/api/v1/metadata',
       headers: {
         Authorization: localStorage.getItem("react-token")
       },

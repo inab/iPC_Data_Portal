@@ -19,10 +19,11 @@ export const removeItem = item => ({
 export const addItem = (list) => {
   return dispatch => {
     const access_token = localStorage.getItem("react-token");
+    const { REACT_APP_URL } = process.env
     // First we check all user permissions.
     axios({
       method: 'get',
-      url: "https://dev-catalogue.ipc-project.bsc.es/permissions/api/me/permissions?format=PLAIN",
+      url: REACT_APP_URL + "/permissions/api/me/permissions?format=PLAIN",
       headers: {
         Authorization: "Bearer " + access_token
       }

@@ -19,8 +19,8 @@ export const fetchUserSelections = () => {
   return dispatch => {
 
     //dispatch(fetchUserSelectionsBegin());
-
-    const session_url = "https://catalogue.ipc-project.bsc.es/catalogue_outbox/api/v1/metadata"
+    const { REACT_APP_URL, REACT_APP_ES_HOST } = process.env
+    const session_url = REACT_APP_URL + "/catalogue_outbox/api/v1/metadata"
     const access_token = localStorage.getItem("react-token");
     var merged = ""
 
@@ -37,7 +37,7 @@ export const fetchUserSelections = () => {
       var analysis = []
 
       for (var i = 0; i < merged.length; i++) {
-        es_url = "https://catalogue.ipc-project.bsc.es/es_host/" + merged[i].metadata.es_index + "/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
+        es_url = REACT_APP_ES_HOST + '/' + merged[i].metadata.es_index + "/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
         url_list.push(es_url)
         analysis.push(merged[i].metadata.analysis)
       }
