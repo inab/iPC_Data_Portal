@@ -4,9 +4,11 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3001:3000"
     env_file:
       - .env
     volumes:
       - "./src:/app/src"
       - "./public:/app/public"
+      - "./cypress:/app/cypress"
+      - "./cypress.json:/app/cypress.json"

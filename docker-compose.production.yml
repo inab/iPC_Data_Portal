@@ -1,0 +1,9 @@
+services:
+  portal:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    ports:
+      - "5002:5002"
+    env_file:
+      - .env.production
