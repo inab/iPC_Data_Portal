@@ -1,9 +1,24 @@
+version: "3"
 services:
   portal:
-    build:
-      context: .
-      dockerfile: Dockerfile.production
+    image: acavalls/ipc-data-catalogue:latest
+    container_name: catalogue-app
     ports:
       - "5002:5002"
     env_file:
-      - .env.production
+      - ./.env.production
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    depends_on:
+      - watchtower
+    restart: always
+
+  watchtower:
+    command: --label-enable --cleanup --interval 300
+    image: containrrr/watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    network_mode: none
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
