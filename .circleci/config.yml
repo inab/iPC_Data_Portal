@@ -1,0 +1,42 @@
+version: 2.1
+orbs:
+  cypress: cypress-io/cypress@1
+workflows:
+  test-current-cypress:
+    jobs:
+      - cypress/run:
+          name: full tests
+          executor: cypress/browsers-chrome76
+          browser: chrome
+          start: npm start
+          command: NODE_ENV=test npm run cypress:run
+      - hold:
+          type: approval
+          requires:
+            - full tests
+      - publish:
+          requires:
+            - full tests
+          filters:
+            branches:
+              only: master
+
+jobs:
+  publish:
+    docker:
+      - image: cimg/node:16.4.1
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: false
+      - run: 
+          command: | 
+            TAG=0.1.${CIRCLE_BUILD_NUM} 
+            docker build -f Dockerfile.production -t acavalls/ipc-data-catalogue:$TAG -t acavalls/ipc-data-catalogue:latest .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push acavalls/ipc-data-catalogue:$TAG
+            docker push acavalls/ipc-data-catalogue:latest
