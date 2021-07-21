@@ -43,6 +43,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "npx cypress run --headless --browser=chrome",
+    "cypress:serve": "cross-env NODE_ENV=test parcel serve --no-cache public/index.html",
+    "cypress:run": "cypress run",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

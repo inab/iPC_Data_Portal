@@ -8,7 +8,7 @@ workflows:
           name: full tests
           executor: cypress/browsers-chrome76
           browser: chrome
-          start: npm start
+          start: npm run cypress:serve
           command: NODE_ENV=test npm run cypress:run
       - hold:
           type: approval
