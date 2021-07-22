@@ -10,7 +10,7 @@ const Explore  = React.lazy( () => import ('./containers/Explore/Explore'));
 const FileRepository = React.lazy( () => import ('./containers/FileRepository/FileRepository'));
 const Members  = React.lazy( () => import ('./containers/Members/Members'));
 const Resources  = React.lazy( () => import ('./containers/Resources/Resources'));
-const RequestAccess  = React.lazy( () => import ('./containers/RequestAccess/RequestAccess'));
+//const MyRequests  = React.lazy( () => import ('./containers/MyRequests/MyRequests'));
 const AdminPanel  = React.lazy( () => import ('./containers/Admin/AdminPanel'));
 
 // Protect routes with a HOC AuthZ Class.
@@ -49,12 +49,12 @@ class App extends Component {
                 <FileRepository />
               </Suspense>
               )} />
-            
-            <Route path="/requestaccess" exact
+	    {/*
+            <Route path="/myrequests" exact
               render={() => (<Suspense fallback={<div> Loading Request Access page... </div>} >
-                <RequestAccess />
+                <MyRequests />
               </Suspense>
-              )} /> 
+              )} /> */}
 
             {/* Protect routes with a HOC AuthZ method. */}
 
