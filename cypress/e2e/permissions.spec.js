@@ -6,6 +6,8 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
         cy.visit("/");
         // Login as a regular user.
         cy.login(Cypress.env("regularUsername"), Cypress.env("regularUserPassword"));
+        // Setting process.env.REACT_APP_URL -> Cypress should be able to read these values when calling async Redux action (Cypress bug?)
+        process.env.REACT_APP_URL = Cypress.config("baseUrl");
         // Now read both whitelist and blacklist items.
         cy.fixture("completeWhitelist").as("whitelistItems")
         cy.fixture("completeBlacklist").as("blacklistItems")
@@ -17,6 +19,7 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
             store.dispatch(addItem(this.whitelistItems));
         });
         cy.wait(5000);
+
         // B. Check if both items have been added to the whitelist.
         cy.checkCartItems(this.whitelistItems, [], true, false);
         // C. Visit the Data Management section and wait until elements are rendered.
@@ -32,6 +35,7 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
             store.dispatch(addItem(this.blacklistItems));
         });
         cy.wait(5000);
+
         // B. Check if the item has been added to the blacklist.
         cy.checkCartItems([], this.blacklistItems, false, true);
         // C. Visit the Data Management section and wait until elements are rendered.
@@ -47,6 +51,7 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
             store.dispatch(addItem([...this.whitelistItems, this.blacklistItems]));
         });
         cy.wait(5000);
+
         // B. Check if the item has been added to the blacklist.
         cy.checkCartItems(this.whitelistItems, this.blacklistItems, true, true);
         // C. Visit the Data Management section and wait until elements are rendered.
