@@ -15,7 +15,9 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
 
     it("CASE I: Items assigned to the whitelist: 1 public dataset AND 1 file with granted access", function () {
         // A. Mock documents selection (Redux async action (thunk): addItem) - They will be added to the cartWhitelist AFTER checking user file permissions on Permissions-API.
-        cy.getStore().then(store => {
+	
+	cy.wait(5000);
+	cy.getStore().then(store => {
             store.dispatch(addItem(this.whitelistItems));
         });
         cy.wait(5000);
@@ -31,7 +33,8 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
 
     it("CASE II: Items assigned to the blacklist - 1 private dataset with no granted access", function () {
         // A. Mock documents selection (Redux async action (thunk): addItem) - It will be added to the cartBlacklist AFTER checking user file permissions on Permissions-API.
-        cy.getStore().then(store => {
+        cy.wait(5000);
+	cy.getStore().then(store => {
             store.dispatch(addItem(this.blacklistItems));
         });
         cy.wait(5000);
@@ -47,6 +50,7 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
 
     it("CASE III: Items assigned to the whitelist/blacklist - 1 public dataset & 2 private datasets ungranted/granted access", function () {
         // A. Mock documents selection (Redux async action (thunk): addItem) - It will be added to the cartBlacklist AFTER checking user file permissions on Permissions-API.
+	cy.wait(5000);
         cy.getStore().then(store => {
             store.dispatch(addItem([...this.whitelistItems, this.blacklistItems]));
         });
