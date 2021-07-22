@@ -1,14 +1,14 @@
 {
     "baseUrl" : "https://dev-catalogue.ipc-project.bsc.es",
     "integrationFolder" : "cypress/e2e",
-    "defaultCommandTimeout" : 25000,
+    "defaultCommandTimeout" : 15000,
     "retries" : {
-        "runMode" : 9
+        "runMode" : 4
     },
     "env" : {
-        "regularUsername" : "regUsr",
-        "regularUserPassword" : "***",
-        "adminUsername" : "admUsr",
-        "adminUserPassword" : "***"
+        "regularUsername" : "",
+        "regularUserPassword" : "",
+        "adminUsername" : "",
+        "adminUserPassword" : ""
     }
 }
