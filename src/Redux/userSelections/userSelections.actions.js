@@ -28,7 +28,7 @@ export const fetchUserSelections = () => {
       method: 'get',
       url: session_url,
       headers: {
-        Authorization: access_token
+        Authorization: "Bearer " + access_token
       }
     }).then(response => {
       merged = Array.prototype.concat.apply([], response.data)

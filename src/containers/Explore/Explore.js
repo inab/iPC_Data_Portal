@@ -89,7 +89,7 @@ class Explore extends Component {
       method: 'delete',
       url: REACT_APP_URL + '/catalogue_outbox/api/v1/metadata',
       headers: {
-        Authorization: localStorage.getItem("react-token")
+	      Authorization: "Bearer " + localStorage.getItem("react-token")
       },
       data:
       { _id : d.file_ID }
