@@ -28,14 +28,20 @@ export const addItem = (list) => {
         Authorization: "Bearer " + access_token
       }
     }).then(response => {
-      let allowedIds = response.data.map(visa => JSON.parse(visa).ga4gh_visa_v1.value)
+      let allowedIds;
+      let allowedItems;
+      let restrictedItems;
 
-      let allowedItems = list.filter((item) => allowedIds.includes(item["file_ID"]) || item["access"] == "public");
+      if(response.data.length > 0){
+        allowedIds = response.data.map(visa => JSON.parse(visa).ga4gh_visa_v1.value)
+        allowedItems = list.filter((item) => allowedIds.includes(item["file_ID"]) || item["access"] == "public");
+        restrictedItems = list.filter((item) => !allowedIds.includes(item["file_ID"]) && item["access"] != "public");
+        allowedItems = allowedItems.reduce((a, b) => a.concat(b), []);
+      } else {
+        allowedItems = list.filter((item) => item["access"] == 'public');
+        restrictedItems = list.filter((item) => item["access"] != 'public');
+      }
 
-      let restrictedItems = list.filter((item) => !allowedIds.includes(item["file_ID"]) && item["access"] != "public");
-
-      allowedItems = allowedItems.reduce((a, b) => a.concat(b), []);
-      
       dispatch(addItemToWhitelist(allowedItems));
       dispatch(addItemToBlacklist(restrictedItems));
 
