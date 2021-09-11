@@ -58,7 +58,7 @@ class Explore extends Component {
         Authorization: "Bearer " + localStorage.getItem("react-token")
       },
       data:
-      { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: d.es_index, analysis: analysis } }
+      { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: d.es_index, analysis: analysis, access: d.access } }
     }).then(response => {
       var data = JSON.parse(response.config.data)
       
