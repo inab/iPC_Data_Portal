@@ -1,0 +1,23 @@
+FROM node:13.13.0
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install -timeout=9999999
+
+RUN apt-get update && apt-get -y upgrade
+
+RUN wget -qO - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - 
+
+RUN apt-get install -y apt-transport-https
+
+RUN echo "deb https://dl.google.com/linux/chrome/deb/ stable main" | tee -a /etc/apt/sources.list.d/google.list
+
+RUN apt-get update && apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb google-chrome-stable
+
+COPY Arranger.js ./node_modules/@arranger/components/dist/Arranger
+
+COPY DataTable.js ./node_modules/@arranger/components/dist/DataTable
+
+CMD ["npm", "start"]

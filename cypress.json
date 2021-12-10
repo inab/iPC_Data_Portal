@@ -1,14 +1,19 @@
 {
-    "baseUrl" : "https://dev-catalogue.ipc-project.bsc.es",
+    "baseUrl" : "http://172.21.0.15:3000",
+    "permissions-api-url" : "http://172.21.0.1:8081",
+    "outbox-api-url" : "http://172.21.0.1:8085",
+    "es-url" : "http://172.21.0.1:9200",
+    "chromeWebSecurity": false,
     "integrationFolder" : "cypress/e2e",
-    "defaultCommandTimeout" : 25000,
+    "defaultCommandTimeout" : 10000,
     "retries" : {
-        "runMode" : 9
+        "runMode" : 5
     },
     "env" : {
-        "regularUsername" : "",
-        "regularUserPassword" : "",
-        "adminUsername" : "",
-        "adminUserPassword" : ""
+        "logoutUrl" : "http://172.21.0.12:8080/auth/realms/IPC/protocol/openid-connect/logout?redirect_uri=http://172.21.0.15:3000",
+        "regularUsername" : "user-1",
+        "regularUserPassword" : "user-1",
+        "adminUsername" : "admin-catalogue",
+        "adminUserPassword" : "admin-catalogue"
     }
 }

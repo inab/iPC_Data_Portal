@@ -6,6 +6,9 @@ describe("Stories: Catalogue selections - Authenticated users are able to POST/D
         cy.visit("/");
         // Login as a regular user.
         cy.login(Cypress.env("regularUsername"), Cypress.env("regularUserPassword"));
+	// Load Cypress env-vars into Node env
+        process.env.REACT_APP_OUTBOX_URL = Cypress.config("outbox-api-url");
+	process.env.REACT_APP_ES_URL = Cypress.config("es-url");
         // Read JSON test file.
         cy.fixture("partialWhitelist").then((whitelistItem) => {
             // Mock item selection (Redux action: ADD_ITEM_TO_WHITELIST) and push to the cart whitelist.
@@ -18,6 +21,9 @@ describe("Stories: Catalogue selections - Authenticated users are able to POST/D
             cy.checkCartItems(whitelistItem, [], true, false);
         })
     })
+    afterEach( () => {
+      cy.logout(Cypress.env("logoutUrl"));
+    });
 
     it("Check if a regular user is able to POST selections to the Outbox API, and then, check if its able to DELETE it", () => {
         // A. POST document to the Outbox API via "Load to VRE" card button.

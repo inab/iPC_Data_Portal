@@ -19,11 +19,10 @@ export const removeItem = item => ({
 export const addItem = (list) => {
   return dispatch => {
     const access_token = localStorage.getItem("react-token");
-    const { REACT_APP_URL } = process.env
-    // First we check all user permissions.
+    const { REACT_APP_PERMISSIONS_URL } = process.env;
     axios({
       method: 'get',
-      url: REACT_APP_URL + "/permissions/api/me/permissions?format=PLAIN",
+      url: `${REACT_APP_PERMISSIONS_URL}/me/permissions?format=PLAIN`, 
       headers: {
         Authorization: "Bearer " + access_token
       }
@@ -36,6 +35,7 @@ export const addItem = (list) => {
         allowedIds = response.data.map(visa => JSON.parse(visa).ga4gh_visa_v1.value)
         allowedItems = list.filter((item) => allowedIds.includes(item["file_ID"]) || item["access"] == "public");
         restrictedItems = list.filter((item) => !allowedIds.includes(item["file_ID"]) && item["access"] != "public");
+	console.log(allowedItems)
         allowedItems = allowedItems.reduce((a, b) => a.concat(b), []);
       } else {
         allowedItems = list.filter((item) => item["access"] == 'public');

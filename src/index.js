@@ -8,8 +8,10 @@ import { store, persistor } from './Redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import FetchUserSelections from './Layout/FetchUserSelections/FetchUserSelections';
 
+const { REACT_APP_AUTH_URL } = process.env;
+
 let initOptions = {
-    url: 'https://inb.bsc.es/auth/', realm: 'IPC', clientId: 'ipc-react-portal', onLoad: 'login-required'
+    url: REACT_APP_AUTH_URL, realm: 'IPC', clientId: 'ipc-react-portal', onLoad: 'login-required'
 }
 
 let keycloak = Keycloak(initOptions);
@@ -26,9 +28,9 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
         <Provider store={store}>
             <BrowserRouter>
                 <PersistGate persistor={persistor}>
-                    <FetchUserSelections>
-                        <App />
-                    </FetchUserSelections>
+                 <FetchUserSelections>
+                    <App />
+                 </FetchUserSelections>
                 </PersistGate>
             </BrowserRouter>
         </Provider>
@@ -38,15 +40,7 @@ keycloak.init({ onLoad: initOptions.onLoad }).success((auth) => {
 
     var roles = [];
 
-    // Reducer??
-    if(keycloak["tokenParsed"]["resource_access"].hasOwnProperty("permissions-api")){
-        roles = keycloak["tokenParsed"]["resource_access"]["permissions-api"]["roles"]
-    } else{
-        roles = "user"
-    }
-    console.log(roles)
-
-    if(roles.includes("admin")){
+    if(keycloak["tokenParsed"]["realm_access"]["roles"].includes("app-admin")){
         localStorage.setItem("role", 'admin');
     } else {
         localStorage.setItem("role", 'user');

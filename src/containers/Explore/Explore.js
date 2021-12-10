@@ -49,11 +49,12 @@ class Explore extends Component {
     var res = ""
     var newCart = ""
     var oldCart = ""
-    const { REACT_APP_URL } = process.env
+
+    const { REACT_APP_OUTBOX_URL } = process.env
 
     axios({
       method: 'post',
-      url: REACT_APP_URL + '/catalogue_outbox/api/v1/metadata',
+      url: `${REACT_APP_OUTBOX_URL}/v1/metadata`,
       headers: {
         Authorization: "Bearer " + localStorage.getItem("react-token")
       },
@@ -83,11 +84,11 @@ class Explore extends Component {
   removeFromVRE = async (e, d, analysis) => {
     e.preventDefault();
 
-    const { REACT_APP_URL } = process.env
+    const { REACT_APP_OUTBOX_URL } = process.env
     
     axios({
       method: 'delete',
-      url: REACT_APP_URL + '/catalogue_outbox/api/v1/metadata',
+      url: `${REACT_APP_OUTBOX_URL}/v1/metadata`,
       headers: {
 	      Authorization: "Bearer " + localStorage.getItem("react-token")
       },
@@ -369,7 +370,7 @@ class Explore extends Component {
               <br/>
               <br/>
               <p style={{ "color" : "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
-              <br/>  
+              <br/> 
               <section> 
                 <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.selectionHandler(index)}>
                   <TabList>

@@ -1,27 +1,66 @@
 version: 2.1
-orbs:
-  cypress: cypress-io/cypress@1
+
 workflows:
-  test-current-cypress:
+  test-and-publish-permissions-API:
     jobs:
-      - cypress/run:
-          name: full tests
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          start: npm run cypress:serve
-          command: npm run cypress:run
+      - run-tests:
+          name: test-api
       - hold:
           type: approval
           requires:
-            - full tests
+            - test-api
       - publish:
           requires:
-            - full tests
+            - test-api
+            - hold
           filters:
             branches:
               only: master
-
 jobs:
+  run-tests:
+    machine:
+      image: ubuntu-1604:202007-01
+    steps:
+      - checkout
+      - run:
+          name: Start KEYCLOAK
+          command: |
+            docker-compose -f docker-compose.tests.yml --env-file .env-tests up -d keycloak
+            docker-compose -f docker-compose.tests.yml logs
+            #sleep 60
+      - run:
+          name: Start Elasticsearch
+          command: |
+            docker-compose -f docker-compose.tests.yml up -d elasticsearch
+            docker-compose -f docker-compose.tests.yml logs
+            #sleep 60
+      - run:
+          name: Run Catalogue
+          command: |
+            docker-compose -f docker-compose.tests.yml up -d catalogue
+            docker-compose -f docker-compose.tests.yml logs
+            #sleep 60
+      - run:
+          name: Start MONGO
+          command: |
+            docker-compose -f docker-compose.tests.yml --env-file .env-tests up -d mongo
+            docker-compose -f docker-compose.tests.yml logs
+            #sleep 30
+      - run:
+          name: Start Permissions-API
+          command: |
+            docker-compose -f docker-compose.tests.yml up -d permissions-api
+            docker-compose -f docker-compose.tests.yml logs
+            #sleep 10
+      - run:
+          name: Start Outbox-API
+          command: |
+            docker-compose -f docker-compose.tests.yml up -d outbox-api
+            docker-compose -f docker-compose.tests.yml logs
+            #sleep 10
+      - run:
+          name: Run tests with Cypress
+          command: docker-compose -f docker-compose.tests.yml exec catalogue npm run cypress:run
   publish:
     docker:
       - image: cimg/node:16.4.1
@@ -36,7 +75,7 @@ jobs:
       - run: 
           command: | 
             TAG=0.1.${CIRCLE_BUILD_NUM} 
-            docker build -f Dockerfile.production -t acavalls/ipc-data-catalogue:$TAG -t acavalls/ipc-data-catalogue:latest .
+            docker build -f Dockerfile.production -t acavalls/test-data-catalogue:$TAG -t acavalls/test-data-catalogue:latest .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push acavalls/ipc-data-catalogue:$TAG
-            docker push acavalls/ipc-data-catalogue:latest
+            docker push acavalls/test-data-catalogue:$TAG
+            docker push acavalls/test-data-catalogue:latest

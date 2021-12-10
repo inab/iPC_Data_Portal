@@ -1,0 +1,116 @@
+version: '3'
+services:
+  catalogue:
+    build:
+      context: .
+      dockerfile: Dockerfile.tests
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./src:/app/src"
+      - "./public:/app/public"
+      - "./cypress:/app/cypress"
+      - "./cypress.json:/app/cypress.json"
+    env_file:
+      - .env-tests
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.15
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      discovery.type: single-node
+      cluster.name: workflow.elasticsearch
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    volumes:
+      - "./tests-data/esdata/data:/usr/share/elasticsearch/data"
+      - "./tests-data/esdata/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '10'
+    healthcheck:
+      test: 'curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s || exit 1'
+      interval: 1m30s
+      timeout: 50s
+      retries: 5
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.16
+  permissions-api:
+    image: acavalls/ipc-permissions-api:latest
+    container_name: permissions-api-test
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    env_file:
+      - .env-tests
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.11
+  outbox-api:
+    image: acavalls/ipc-outbox-api:latest
+    container_name: outbox-api-test
+    ports:
+      - 8085:8085
+    depends_on:
+      - mongo
+      - permissions-api
+    env_file:
+      - .env-tests
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.9
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.13
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      DB_VENDOR: ${DB_VENDOR}
+      DB_ADDR: ${DB_ADDR}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_SCHEMA: ${DB_SCHEMA}
+      DB_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+    volumes:
+      - "./tests-data/keycloak/realms:/opt/jboss/keycloak/imports"
+    command:
+      - '-b 0.0.0.0 -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.migration.strategy=IGNORE_EXISTING'
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.12
+  mongo:
+    image: mongo:4.4
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+    ports:
+      - 27017:27017
+    volumes:
+      - "./tests-data/mdbdata:/data/db"
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.10
+networks:
+  dac-network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24

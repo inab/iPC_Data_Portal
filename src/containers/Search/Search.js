@@ -51,6 +51,7 @@ class Search extends Component {
     var elements = this.state.allRows.filter((el) => indexes.includes(el["id"]));
     // Trigger cart Redux action.
     this.props.addItem(elements)
+
     alert("Datasets added to the cart!")
   }
 
