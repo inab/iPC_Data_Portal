@@ -1,4 +1,5 @@
 FROM node:13.13.0-alpine
+
 WORKDIR /app
 
 COPY . .
@@ -8,6 +9,15 @@ RUN npm install
 COPY Arranger.js ./node_modules/@arranger/components/dist/Arranger
 
 COPY DataTable.js ./node_modules/@arranger/components/dist/DataTable
+
+ENV REACT_APP_ARRANGER_API=https://catalogue.ipc-project.bsc.es/arranger_api
+ENV REACT_APP_ES_HOST=https://catalogue.ipc-project.bsc.es/es_host
+ENV REACT_APP_ES_URL=https://catalogue.ipc-project.bsc.es/es_host
+ENV REACT_APP_OUTBOX_URL=https://catalogue.ipc-project.bsc.es/catalogue_outbox/api
+ENV REACT_APP_PERMISSIONS_URL=https://catalogue.ipc-project.bsc.es/permissions/api
+ENV REACT_APP_AUTH_URL=https://inb.bsc.es/auth/
+ENV REACT_APP_URL=https://catalogue.ipc-project.bsc.es
+ENV PORT=5002
 
 RUN npm run build
 

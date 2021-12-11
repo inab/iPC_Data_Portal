@@ -75,7 +75,7 @@ jobs:
       - run: 
           command: | 
             TAG=0.1.${CIRCLE_BUILD_NUM} 
-            docker build -f Dockerfile.production -t acavalls/test-data-catalogue:$TAG -t acavalls/test-data-catalogue:latest .
+            docker build -f Dockerfile.production -t acavalls/ipc-data-catalogue:$TAG -t acavalls/ipc-data-catalogue:latest .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push acavalls/test-data-catalogue:$TAG
-            docker push acavalls/test-data-catalogue:latest
+            docker push acavalls/ipc-data-catalogue:$TAG
+            docker push acavalls/ipc-data-catalogue:latest
