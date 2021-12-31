@@ -17,6 +17,7 @@ ENV REACT_APP_OUTBOX_URL=https://catalogue.ipc-project.bsc.es/catalogue_outbox/a
 ENV REACT_APP_PERMISSIONS_URL=https://catalogue.ipc-project.bsc.es/permissions/api
 ENV REACT_APP_AUTH_URL=https://inb.bsc.es/auth/
 ENV REACT_APP_URL=https://catalogue.ipc-project.bsc.es
+ENV REACT_APP_DAC_PORTAL_API_URL="https://dac.ipc-project.bsc.es/api"
 ENV PORT=5002
 
 RUN npm run build
