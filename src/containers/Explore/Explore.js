@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Explore.module.css';
 import classes2 from '../../App.module.css';
-import Modal from '../../components/Navigation/Modal/Modal';
+import ItemsModal from '../../components/Navigation/Modal/Modal';
 import * as _ from 'lodash';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -10,6 +10,7 @@ import { updateUserSelections } from '../../Redux/userSelections/userSelections.
 import { CSVLink } from "react-csv";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.scss';
+import RequestModal from "../../components/Navigation/Modal/RequestModal";
 
 class Explore extends Component {
   state = {
@@ -19,7 +20,13 @@ class Explore extends Component {
     switch: "",
     option: "preselected",
     selectedTab: 0,
-    dataToExport: []
+    dataToExport: [],
+    request: false,
+    requestData: {
+      "comments": "",
+      "policy" : "",
+      "dataset" : ""
+    }
   }
 
   selectionHandler = (option) => {
@@ -46,9 +53,6 @@ class Explore extends Component {
 
   postToVRE = async (e, d, analysis) => {
     e.preventDefault();
-    var res = ""
-    var newCart = ""
-    var oldCart = ""
 
     const { REACT_APP_OUTBOX_URL } = process.env
 
@@ -130,6 +134,64 @@ class Explore extends Component {
     })
   }
 
+  handleRequest = async (e, d) => {
+    e.preventDefault();
+    
+    const { REACT_APP_DAC_PORTAL_API_URL } = process.env	  
+    
+    axios({
+      method: 'get',
+      url: `${REACT_APP_DAC_PORTAL_API_URL}/user/policies`,
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("react-token")
+      },
+      params: {
+        'ds-id': d.file_ID
+      },
+    }).then(response => {
+      console.log(response)
+      let setPolicy = {...this.state.requestData, 'policy': response.data[0].files[0].policy, 'dataset' : d.file_ID}
+      this.setState({request: true, requestData: setPolicy });
+    })
+    .catch(error => {
+      throw error;
+    });     
+  }
+
+  closeRequest = () => {
+    this.setState({request: false});
+  }
+
+  changeInput = (e) => {
+    e.preventDefault();
+    let input = {...this.state.requestData, [e.target.getAttribute('name')] : e.target.value}
+    this.setState({requestData: input});
+  }
+
+  submitRequest = (e) => {
+    e.preventDefault();
+
+    const { REACT_APP_DAC_PORTAL_API_URL } = process.env
+    
+    axios({
+      method: 'post',
+      url: `${REACT_APP_DAC_PORTAL_API_URL}/user/request`,
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("react-token")
+      },
+      data:
+      { 'ds-id' : this.state.requestData.dataset, 
+        'policy' : this.state.requestData.policy,
+        'comments' : this.state.requestData.comments }
+    }).then(response => {
+      alert("Request submitted")
+      this.setState({request: false});
+    })
+    .catch(error => {
+      throw error;
+    });
+  }
+
   render() {
 
     let header = ""
@@ -168,22 +230,22 @@ class Explore extends Component {
                 <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
                 <button onClick={(e) => this.removeFromVRE(e, d, "vre")} class="btn btn-danger" style={{'margin-right' : "5px"}}> Unload data </button>
                 <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{'margin-right': "5px"}}> Get Details </button>
-                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
-                <div>
-                  <table class="table table-hover table-bordered">
-                    <tbody>
-                      {Object.entries(this.state.details).map(([key,value])=>{
-                      return (    
-                        <tr>
-                          <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
-                            <td> {value.toString()} </td>
-                        </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>  
-                </Modal> 
+                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
+                  <div>
+                    <table class="table table-hover table-bordered">
+                      <tbody>
+                        {Object.entries(this.state.details).map(([key, value]) => {
+                          return (
+                            <tr>
+                              <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
+                              <td> {value.toString()} </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </ItemsModal> 
               </div>
             </div>)
           })} 
@@ -195,13 +257,13 @@ class Explore extends Component {
       if(this.props.selections[1].length != 0){
         header = (
           <div class="mt-5">
-              <div className={classes.leftbox}>
-                <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
-              </div>
-              <div className={classes.rightbox}>
-                <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
-                <br/>
-              </div>
+            <div className={classes.leftbox}>
+              <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
+            </div>
+            <div className={classes.rightbox}>
+              <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
+              <br/>
+            </div>
           </div>
         )
       } else {
@@ -223,22 +285,22 @@ class Explore extends Component {
                 <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
                 <button onClick={(e) => this.removeFromVRE(e, d, "cavatica")} class="btn btn-danger" style={{"margin-right": "5px"}}> Unload data </button>
                 <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
-                <div>
-                  <table class="table table-hover table-bordered">
-                    <tbody>
-                      {Object.entries(this.state.details).map(([key,value])=>{
-                        return (    
-                          <tr>
-                            <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
+                  <div>
+                    <table class="table table-hover table-bordered">
+                      <tbody>
+                        {Object.entries(this.state.details).map(([key, value]) => {
+                          return (
+                            <tr>
+                              <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
                               <td> {value.toString()} </td>
-                          </tr>
+                            </tr>
                           );
-                      })}
-                    </tbody>
-                  </table>
-                </div> 
-                </Modal> 
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </ItemsModal> 
               </div>
             </div>)
           })} 
@@ -247,9 +309,7 @@ class Explore extends Component {
     }
 
     else if (this.state.option === "preselected") {
-
-      //if(this.props.cartItems.length == 0) {
-        if(this.props.cartWhitelist.length == 0 && this.props.cartBlacklist.length == 0) {
+      if(this.props.cartWhitelist.length == 0 && this.props.cartBlacklist.length == 0) {
         header = (
           <div class="mt-5 text-center">
             <p> <strong> The cart items list is empty. Please go first to the <a href="/filerepository"> File Repository </a> section and select data you might be interested in. </strong> </p>
@@ -275,7 +335,7 @@ class Explore extends Component {
                 <button onClick={(e) => this.postToVRE(e, d, "vre")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to VRE </button>
                 <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
                 <button onClick={(e) => this.getDetails(e, idx, "allowedItems", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="allowedItems">
+                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="allowedItems">
                   <div>
                     <table class="table table-hover table-bordered">
                       <tbody>
@@ -290,7 +350,7 @@ class Explore extends Component {
                       </tbody>
                     </table>
                   </div>
-                </Modal> 
+                </ItemsModal> 
               </div>
             </div>)
           })}
@@ -302,7 +362,7 @@ class Explore extends Component {
                 <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
                 <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
                 <button onClick={(e) => this.getDetails(e, idx, "restrictedItems", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <Modal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="restrictedItems">
+                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="restrictedItems">
                   <div>
                     <table class="table table-hover table-bordered">
                       <tbody>
@@ -317,8 +377,11 @@ class Explore extends Component {
                       </tbody>
                     </table>
                   </div>
-                </Modal> 
-                <button class="btn btn-warning" style={{"margin-right": "5px"}}> Request Access </button>
+                </ItemsModal> 
+                {d.DAC_ID === "IPC" ? 
+                  <button class="btn btn-warning" style={{"margin-right": "5px"}} onClick={(e) => this.handleRequest(e, d, idx)}> Request Access </button> :
+                  <button class="btn btn-warning" style={{"margin-right": "5px"}} disabled> Request Access </button>
+                }
               </div>
             </div>)
           })}
@@ -359,7 +422,8 @@ class Explore extends Component {
         </div>
       )
     }
-    
+    let { comments, policy, dataset } = this.state.requestData
+
     return (
       <React.Fragment>
         <br/>
@@ -402,6 +466,14 @@ class Explore extends Component {
             </div>
           </div>
         </div>
+        <RequestModal show={this.state.request} 
+                      close={this.closeRequest}
+                      submit={this.submitRequest} 
+                      input={this.changeInput} 
+                      comments={comments}
+                      policy={policy}   
+                      dataset={dataset}    
+                      />      
       </React.Fragment>
     )
   }
@@ -420,3 +492,4 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Explore);
+
