@@ -1,0 +1,26 @@
+.footer {
+    height: 60px;
+    border-top: 1px solid #e7e7e7e0;
+    background-image: linear-gradient(to right, #CAD461 , #75B9BE);
+
+    nav {
+        ul {
+            list-style: none;
+            float: left;
+            display: flex;
+
+            li {
+                a {
+                    text-decoration: none;
+                    margin-left: 25px;
+                    color: white;
+                    font-weight: bolder;
+                }
+            }
+        }
+    }
+    p {
+        color: white;
+        font-weight: bolder;
+    }
+}
