@@ -1,17 +1,17 @@
 version: 2.1
 
 workflows:
-  test-and-publish-permissions-API:
+  test-and-publish-Data-Catalogue:
     jobs:
       - run-tests:
-          name: test-api
+          name: test-data-catalogue
       - hold:
           type: approval
           requires:
-            - test-api
+            - test-data-catalogue
       - publish:
           requires:
-            - test-api
+            - test-data-catalogue
             - hold
           filters:
             branches:
