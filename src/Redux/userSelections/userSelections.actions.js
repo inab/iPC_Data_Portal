@@ -37,7 +37,7 @@ export const fetchUserSelections = () => {
       var analysis = []
 
       for (var i = 0; i < merged.length; i++) {
-        es_url = REACT_APP_ES_URL + "/" + merged[i].metadata.es_index + "/_search?pretty=true&size=10000&q=file_ID:" + merged[i]._id
+        es_url = REACT_APP_ES_URL + "/" + merged[i].metadata.es_index + "/_search?pretty=true&size=10000&q=file_ID:" + "\"" + merged[i]._id + "\""
         url_list.push(es_url)
         analysis.push(merged[i].metadata.analysis)
       }
