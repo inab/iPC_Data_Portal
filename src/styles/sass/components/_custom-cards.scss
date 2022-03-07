@@ -2,12 +2,18 @@
   background-color: #f9f9f9;
   padding: 15px;
   width: 100%;
-  border: 1px solid #CAD461 !important;
+  border: 2px solid #CAD461 !important;
+
+  &:hover {
+    background-color: #a0ccccd3;
+    color: white;
+    border: 2px solid #75B9BE !important;
+  }
   
   &__content { 
 
     &--title {
-      font-weight: font-weight(font-weight-regular);
+      font-weight: font-weight(font-weight-thick);
     }
 
     &--para {
