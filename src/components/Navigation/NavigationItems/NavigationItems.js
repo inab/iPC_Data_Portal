@@ -8,8 +8,8 @@ const navigationItems = () => (
     <ul class="navbar-nav ml-auto">
         <NavigationItem link="/" exact > Dashboard </NavigationItem>
         <NavigationItem link="/explore" exact> Data Management </NavigationItem>
-        <NavigationItem link="/filerepository" exact> File Repository </NavigationItem>
-        <NavigationItem link="/requestaccess" exact> My Requests </NavigationItem>
+        <NavigationItem link="/filerepository" exact> Search </NavigationItem>
+        <NavigationItem link="/requestaccess" exact> Requests </NavigationItem>
         <NavigationItem link="/adminpanel" exact> Admin panel </NavigationItem>
         <NavigationItem link={logout} exact> Logout </NavigationItem>
     </ul>
