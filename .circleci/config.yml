@@ -47,6 +47,10 @@ jobs:
             docker-compose -f docker-compose.tests.yml logs
             #sleep 30
       - run:
+          name: Start RabbitMQ
+          command: |
+            docker-compose -f docker-compose.tests.yml up -d rabbitmq
+      - run:
           name: Start Permissions-API
           command: |
             docker-compose -f docker-compose.tests.yml up -d permissions-api
