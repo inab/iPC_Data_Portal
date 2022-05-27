@@ -26,8 +26,8 @@ services:
       cluster.name: workflow.elasticsearch
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     volumes:
-      - "./tests-data/esdata/data:/usr/share/elasticsearch/data"
-      - "./tests-data/esdata/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+      - "./ipc-tests-data/esdata/data:/usr/share/elasticsearch/data"
+      - "./ipc-tests-data/esdata/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     logging:
       driver: 'json-file'
       options:
@@ -87,7 +87,7 @@ services:
       KEYCLOAK_USER: ${KEYCLOAK_USER}
       KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     volumes:
-      - "./tests-data/keycloak/realms:/opt/jboss/keycloak/imports"
+      - "./ipc-tests-data/keycloak/realms:/opt/jboss/keycloak/imports"
     command:
       - '-b 0.0.0.0 -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.migration.strategy=IGNORE_EXISTING'
     ports:
@@ -105,7 +105,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - "./tests-data/mdbdata:/data/db"
+      - "./ipc-tests-data/mdbdata:/data/db"
     networks:
       dac-network:
         ipv4_address: 172.21.0.10
