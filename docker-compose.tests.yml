@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   catalogue:
     build:
@@ -98,17 +98,43 @@ services:
       dac-network:
         ipv4_address: 172.21.0.12
   mongo:
-    image: mongo:4.4
+    image : mongo:4.4
+    hostname: mongo
+    restart: on-failure
     environment:
+      PUID: 1000
+      PGID: 1000
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+      MONGO_REPLICA_SET_NAME: ${MONGO_REPLICASET}
+    volumes:
+      - "./ipc-test-data/mdbdata:/data/db"
+      - "./keyfile:/opt/keyfile/keyfile"
     ports:
       - 27017:27017
-    volumes:
-      - "./ipc-tests-data/mdbdata:/data/db"
+    healthcheck:
+      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --qui
+et) -eq 1
+      interval: 10s
+      start_period: 30s
+    command: "--bind_ip_all --keyFile /opt/keyfile/keyfile --replSet rs0"
     networks:
       dac-network:
         ipv4_address: 172.21.0.10
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    networks:
+      dac-network:
+        ipv4_address: 172.21.0.24
 networks:
   dac-network:
     ipam:
