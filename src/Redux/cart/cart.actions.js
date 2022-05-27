@@ -32,7 +32,7 @@ export const addItem = (list) => {
       let restrictedItems;
 
       if(response.data.length > 0){
-        allowedIds = response.data.map(visa => JSON.parse(visa).ga4gh_visa_v1.value)
+        allowedIds = response.data.map(visa => JSON.parse(visa).ga4gh_visa_v1.value.split(":").pop())
         allowedItems = list.filter((item) => allowedIds.includes(item["file_ID"]) || item["access"] == "public");
         restrictedItems = list.filter((item) => !allowedIds.includes(item["file_ID"]) && item["access"] != "public");
 	console.log(allowedItems)
