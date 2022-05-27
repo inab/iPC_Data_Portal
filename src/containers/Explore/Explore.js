@@ -378,7 +378,7 @@ class Explore extends Component {
                     </table>
                   </div>
                 </ItemsModal> 
-                {d.DAC_ID === "IPC" ? 
+                {d.DAC_ID.includes("IPC") === true ? 
                   <button class="btn btn-warning" style={{"margin-right": "5px"}} onClick={(e) => this.handleRequest(e, d, idx)}> Request Access </button> :
                   <button class="btn btn-warning" style={{"margin-right": "5px"}} disabled> Request Access </button>
                 }
