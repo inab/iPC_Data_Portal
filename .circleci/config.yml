@@ -64,7 +64,9 @@ jobs:
             #sleep 10
       - run:
           name: Run tests with Cypress
-          command: docker-compose -f docker-compose.tests.yml exec catalogue npm run cypress:run
+          command: |
+            sudo chmod -R 777 ./
+            docker-compose -f docker-compose.tests.yml exec catalogue npm run cypress:run
   publish:
     docker:
       - image: cimg/node:16.4.1
