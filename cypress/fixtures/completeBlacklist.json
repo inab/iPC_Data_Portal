@@ -2,7 +2,7 @@
     {
         "access": "private",
         "es_index": "permissions_test",
-        "file_ID": "https://test-url/TF099",
+        "file_ID": "TF099",
         "file_external_ID": "DEMO_LOCATOR_TF099",
         "file_format": "csv",
         "file_size": 5000,

@@ -2,7 +2,7 @@
     {
     "access": "public",
     "es_index": "permissions_test",
-    "file_ID": "https://test-url/TF000",
+    "file_ID": "TF000",
     "file_external_ID": "DEMO_LOCATOR_TF000",
     "file_format": "csv",
     "file_size": 1000,
@@ -12,7 +12,7 @@
     {
     "access": "private",
     "es_index": "permissions_test",
-    "file_ID": "https://test-url/TF001",
+    "file_ID": "TF001",
     "file_external_ID": "DEMO_LOCATOR_TF001",
     "file_format": "csv",
     "file_size": 1000,
