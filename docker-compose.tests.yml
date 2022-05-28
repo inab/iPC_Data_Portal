@@ -26,8 +26,8 @@ services:
       cluster.name: workflow.elasticsearch
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     volumes:
-      - "./ipc-tests-data/esdata/data:/usr/share/elasticsearch/data"
-      - "./ipc-tests-data/esdata/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+      - "./ipc-test-data/esdata/data:/usr/share/elasticsearch/data"
+      - "./ipc-test-data/esdata/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     logging:
       driver: 'json-file'
       options:
@@ -87,7 +87,7 @@ services:
       KEYCLOAK_USER: ${KEYCLOAK_USER}
       KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     volumes:
-      - "./ipc-tests-data/keycloak/realms:/opt/jboss/keycloak/imports"
+      - "./ipc-test-data/keycloak/realms:/opt/jboss/keycloak/imports"
     command:
       - '-b 0.0.0.0 -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.migration.strategy=IGNORE_EXISTING'
     ports:
@@ -113,8 +113,7 @@ services:
     ports:
       - 27017:27017
     healthcheck:
-      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --qui
-et) -eq 1
+      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
       interval: 10s
       start_period: 30s
     command: "--bind_ip_all --keyFile /opt/keyfile/keyfile --replSet rs0"
