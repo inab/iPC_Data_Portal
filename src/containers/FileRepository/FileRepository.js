@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import Aggs from '../Aggs/Aggs';
 import Search from '../Search/Search';
-import classes from './FileRepository.module.css';
 
 class FileRepository extends Component {
     constructor(props){
@@ -36,9 +34,6 @@ class FileRepository extends Component {
         
         <div class="container-fluid">
             <div class="row">
-                {/*<div class="col-2">
-                    <Aggs />
-                </div>*/}
                 <div class="col-12">
                     <div class="row">
                         <Search />

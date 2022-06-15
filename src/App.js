@@ -2,15 +2,11 @@ import React, { Component, Suspense } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Layout from './Layout/hoc/Layout';
 import './styles/sass/App.scss';
-import { connect } from 'react-redux';
 import Authorization from './Layout/Authorization/Authorization';
 
 const Dashboard  = React.lazy( () => import ('./containers/Dashboard/Dashboard'));
 const Explore  = React.lazy( () => import ('./containers/Explore/Explore'));
 const FileRepository = React.lazy( () => import ('./containers/FileRepository/FileRepository'));
-const Members  = React.lazy( () => import ('./containers/Members/Members'));
-const Resources  = React.lazy( () => import ('./containers/Resources/Resources'));
-//const MyRequests  = React.lazy( () => import ('./containers/MyRequests/MyRequests'));
 const AdminPanel  = React.lazy( () => import ('./containers/Admin/AdminPanel'));
 
 // Protect routes with a HOC AuthZ Class.
@@ -49,12 +45,6 @@ class App extends Component {
                 <FileRepository />
               </Suspense>
               )} />
-	    {/*
-            <Route path="/myrequests" exact
-              render={() => (<Suspense fallback={<div> Loading Request Access page... </div>} >
-                <MyRequests />
-              </Suspense>
-              )} /> */}
 
             {/* Protect routes with a HOC AuthZ method. */}
 
