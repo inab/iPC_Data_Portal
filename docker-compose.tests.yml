@@ -76,7 +76,7 @@ services:
       dac-network:
         ipv4_address: 172.21.0.13
   keycloak:
-    image: quay.io/keycloak/keycloak:15.0.2
+    image: quay.io/keycloak/keycloak:16.1.1
     environment:
       DB_VENDOR: ${DB_VENDOR}
       DB_ADDR: ${DB_ADDR}
