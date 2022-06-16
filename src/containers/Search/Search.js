@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import mainClasses from '../../App.module.css';
-import classes from './Search.module.css';
-import {isEqual} from 'lodash';
 import { connect } from 'react-redux';
 import { addItem } from '../../Redux/cart/cart.actions';
+import mainClasses from '../../App.module.css';
 
 import {
   PORTAL_NAME,
@@ -25,23 +23,23 @@ import {
 } from '@arranger/components/dist/Arranger';
 
 class Search extends Component {
-  
-  state = { 
+
+  state = {
     allRows: [],
     selectedRows: [],
     refresh: false
   }
 
-  shouldComponentUpdate () {
+  shouldComponentUpdate() {
     return false // this will lead to never re-render the component
   }
-  
-  allRowsHandler = (arrangerData) => { 
+
+  allRowsHandler = (arrangerData) => {
     this.setState({ allRows: arrangerData })
   }
 
   selectedRowsHandler = (tableCheckboxes) => {
-    this.setState({selectedRows: tableCheckboxes})
+    this.setState({ selectedRows: tableCheckboxes })
   }
 
   cartHandler = (e) => {
@@ -60,81 +58,54 @@ class Search extends Component {
     localStorage.removeItem("ACTIVE_INDEX");
     localStorage.removeItem("PROJECT_ID");
     localStorage.removeItem("PROJECT_ID_NAME");
-    window.location.reload(false); 
+    window.location.reload(false);
   }
 
   render() {
 
     var button = (<button className={mainClasses.ipcButton} onClick={this.cartHandler}>
-                    Add to cart
-                  </button>)
+      Add to cart
+    </button>)
 
     var buttonRefresh = (<button className={mainClasses.ipcButton} onClick={this.refreshProject}>
-                          Change Project 
-                         </button>)
+      Change Project
+    </button>)
 
     const ChooseProject = ({ index, projectId, update, projects }) => {
 
-      let projectsArr = projects.map(x => (
-        <option className={classes.option} key={x.id} value={x.id}>
-          {x.id}
-        </option>
-      ))
+      const setProject = function (el) {
+        setValue('PROJECT_ID', el.id);
+        setValue('ACTIVE_INDEX', el.types.types[0].index);
+        setValue('ACTIVE_INDEX_NAME', el.types.types[0].name);
+        update({
+          index: el.types.types[0].index,
+          graphqlField: el.types.types[0].name,
+          projectId: el.id
+        });
+      }
 
       return (
-        <div
-          css={`
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            justify-content: center;
-          `}
-        >
-          <h3 className="ml-2 mt-0">
-            Please select project and index of your interest.
-          </h3>
-
-          <select
-            className="custom-select mt-4 ml-2"
-            value={projectId}
-            onChange={e => {
-              setValue('PROJECT_ID', e.target.value);
-              update({
-                projectId: e.target.value,
-              });
-            }}
-          >
-            <option className={classes.decorated} id="version">Select a project</option>
-            {projectsArr}
-          </select>
-
-          <select
-            className="custom-select mt-4 ml-2"
-            value={index}
-            onChange={e => {
-              setValue('ACTIVE_INDEX', e.target.value);
-
-              let graphqlField = projects
-                .find(x => x.id === projectId)
-                ?.types ?.types.find(x => x.index === e.target.value).name;
-
-              setValue('ACTIVE_INDEX_NAME', graphqlField);
-              update({
-                index: e.target.value,
-                graphqlField,
-              });
-            }}
-          >
-            <option className={classes.option} id="version">Select an index</option>
-            {projects
-              .find(x => x.id === projectId)
-              ?.types ?.types ?.map(x => (
-                <option className={classes.option} key={x.index} value={x.index}>
-                  {x.index}
-                </option>
-              ))}
-          </select>
+        <div className="content-wrapper search-panel">
+          <h2> Select a project: </h2>
+          <div className="row h-100 text-center justify-content-center">
+            <div className="col-12 h-50">
+              <div className="row h-100">
+                {projects.map((el, idx) => (
+                  <div className="col-lg-6 d-flex align-items-stretch px-3 py-1">
+                    <div className="card text-white w-100 card-search-style"
+                      onClick={e => setProject(el)}>
+                      <div className="card-body text-white">
+                        <h2 className="card-title"> {el.id} </h2>
+                        <div className="card-icon">
+                          <i className="fa fa-users"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       );
     };
@@ -155,7 +126,7 @@ class Search extends Component {
           >
             <CurrentSQON {...props} />
             <Table rows={this.selectedRowsHandler}
-            {...props} />
+              {...props} />
             {button}
             {buttonRefresh}
           </div>
@@ -189,17 +160,17 @@ class Search extends Component {
                   );
                 }}
               />) : (
-                <GetProjects
-                  render={props => (
-                    <ChooseProject
-                      {...props}
-                      index={index}
-                      projectId={projectId}
-                      update={update}
-                    />
-                  )}
-                />
-              );
+              <GetProjects
+                render={props => (
+                  <ChooseProject
+                    {...props}
+                    index={index}
+                    projectId={projectId}
+                    update={update}
+                  />
+                )}
+              />
+            );
           }}
         />
 
