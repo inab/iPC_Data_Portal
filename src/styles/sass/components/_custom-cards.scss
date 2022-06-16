@@ -98,3 +98,23 @@
 .card-cols {
   display: flex;
 }
+
+
+.card{
+  border-radius: 4px;
+  transition: transform .5s cubic-bezier(.155,1.105,.295,1.12);
+  cursor: pointer;
+}
+
+.card:hover{
+  transform: scale(1.05);
+}
+
+.card-icon {
+  float: right;
+  width: 45px;
+}
+
+.card-search-style {
+  background: $color-primary !important;
+}
