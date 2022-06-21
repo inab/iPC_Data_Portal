@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import classes from './Explore.module.css';
 import classes2 from '../../App.module.css';
 import ItemsModal from '../../components/Navigation/Modal/Modal';
-import * as _ from 'lodash';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import { addItem, removeItem } from '../../Redux/cart/cart.actions';
 import { updateUserSelections } from '../../Redux/userSelections/userSelections.actions';
@@ -11,7 +9,8 @@ import { CSVLink } from "react-csv";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.scss';
 import RequestModal from "../../components/Navigation/Modal/RequestModal";
-import { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysisStore, removeItemFromAnalysis } from "../../services/manageSelections"
+import { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysisStore, removeItemFromAnalysis } from "../../Services/ManageSelections";
+import { getDataPolicies, submitDataRequest } from "../../Services/ManageRequests";
 
 class Explore extends Component {
   state = {
@@ -91,26 +90,9 @@ class Explore extends Component {
 
   handleRequest = async (e, d) => {
     e.preventDefault();
-
-    const { REACT_APP_DAC_PORTAL_API_URL } = process.env
-
-    axios({
-      method: 'get',
-      url: `${REACT_APP_DAC_PORTAL_API_URL}/user/policies`,
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("react-token")
-      },
-      params: {
-        'ds-id': d.file_ID
-      },
-    }).then(response => {
-      console.log(response)
-      let setPolicy = { ...this.state.requestData, 'policy': response.data[0].files[0].policy, 'dataset': d.file_ID }
-      this.setState({ request: true, requestData: setPolicy });
-    })
-      .catch(error => {
-        throw error;
-      });
+    const itemPolicy = await getDataPolicies(d);
+    const setPolicy = { ...this.state.requestData, 'policy': itemPolicy.policy, 'dataset': itemPolicy.dataset }
+    this.setState({ request: true, requestData: setPolicy});
   }
 
   closeRequest = () => {
@@ -123,30 +105,12 @@ class Explore extends Component {
     this.setState({ requestData: input });
   }
 
-  submitRequest = (e) => {
+  submitRequest = async (e) => {
     e.preventDefault();
-
-    const { REACT_APP_DAC_PORTAL_API_URL } = process.env
-
-    axios({
-      method: 'post',
-      url: `${REACT_APP_DAC_PORTAL_API_URL}/user/request`,
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("react-token")
-      },
-      data:
-      {
-        'ds-id': this.state.requestData.dataset,
-        'policy': this.state.requestData.policy,
-        'comments': this.state.requestData.comments
-      }
-    }).then(response => {
-      alert("Request submitted")
-      this.setState({ request: false });
-    })
-      .catch(error => {
-        throw error;
-      });
+    const object = { ...this.state.requestData }
+    await submitDataRequest(object)
+    alert("Submitted")
+    this.setState({ request: false });
   }
 
   render() {

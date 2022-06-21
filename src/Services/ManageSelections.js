@@ -70,4 +70,4 @@ const removeItemFromAnalysisStore = (item, selection, store) => {
     }
 }
 
-export { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysis, removeItemFromAnalysisStore };
+export { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysis, removeItemFromAnalysisStore }
