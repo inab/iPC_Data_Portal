@@ -11,11 +11,12 @@ import { CSVLink } from "react-csv";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.scss';
 import RequestModal from "../../components/Navigation/Modal/RequestModal";
+import { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysisStore, removeItemFromAnalysis } from "../../services/manageSelections"
 
 class Explore extends Component {
   state = {
-    changed : false,
-    details : [],
+    changed: false,
+    details: [],
     index: "",
     switch: "",
     option: "preselected",
@@ -24,8 +25,8 @@ class Explore extends Component {
     request: false,
     requestData: {
       "comments": "",
-      "policy" : "",
-      "dataset" : ""
+      "policy": "",
+      "dataset": ""
     }
   }
 
@@ -48,85 +49,39 @@ class Explore extends Component {
 
     this.setState({
       option: name,
-      selectedTab: option })
+      selectedTab: option
+    })
   }
 
-  postToVRE = async (e, d, analysis) => {
+  sendToAnalysis = async (e, d, analysis) => {
     e.preventDefault();
-
-    const { REACT_APP_OUTBOX_URL } = process.env
-
-    axios({
-      method: 'post',
-      url: `${REACT_APP_OUTBOX_URL}/v1/metadata`,
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("react-token")
-      },
-      data:
-      { _id : d.file_ID, metadata : { file_locator: d.file_external_ID, es_index: d.es_index, analysis: analysis, access: d.access } }
-    }).then(response => {
-      var data = JSON.parse(response.config.data)
-      
-      // Update global cart state (Redux)
-      this.props.removeItem(data)
-
-      if(data.metadata["analysis"] === "vre") {
-        var updated = [[...this.props.selections[0], d], this.props.selections[1]]
-        this.props.updateUserSelections(updated) 
-      }
-      if(data.metadata["analysis"] === "cavatica") {
-        var updated = [this.props.selections[0], [...this.props.selections[1], d]]
-        this.props.updateUserSelections(updated) 
-      }
-    })
-    .catch(error => {
-      throw error;
-    }); 
-
+    const object = { ...d, analysis }
+    const addedItemForAnalysis = await addItemForAnalysis(object)
+    // Redux: Add this item to the proper analysis item list
+    let updatedAnalysisStore = addItemToAnalysisStore(object, d, this.props.selections)
+    this.props.updateUserSelections(updatedAnalysisStore)
+    // Redux: Remove item from cart
+    this.props.removeItem(addedItemForAnalysis)
   }
 
-  removeFromVRE = async (e, d, analysis) => {
+  removeFromAnalysis = async (e, d, analysis) => {
     e.preventDefault();
-
-    const { REACT_APP_OUTBOX_URL } = process.env
-    
-    axios({
-      method: 'delete',
-      url: `${REACT_APP_OUTBOX_URL}/v1/metadata`,
-      headers: {
-	      Authorization: "Bearer " + localStorage.getItem("react-token")
-      },
-      data:
-      { _id : d.file_ID }
-    }).then(response => {
-      var newdb = ""
-
-      // Update global cart state (Redux)
-      this.props.addItem([d])
-
-      if(analysis === "vre"){
-        newdb = this.props.selections[0].filter(el => el["file_ID"] !== d.file_ID)
-        var updated = [newdb, this.props.selections[1]]
-        this.props.updateUserSelections(updated)
-      }
-      if(analysis === "cavatica") {
-        newdb = this.props.selections[1].filter(el => el["file_ID"] !== d.file_ID)
-        var updated = [this.props.selections[0], newdb]
-        this.props.updateUserSelections(updated)
-      }
-    })
-    .catch(error => {
-      throw error;
-    }); 
+    const object = { ...d, analysis }
+    const deletedItemFromAnalysis = await removeItemFromAnalysis(object);
+    // Redux: Remove this item to the proper analysis item list
+    let updatedAnalysisStore = removeItemFromAnalysisStore(object, d, this.props.selections)
+    this.props.updateUserSelections(updatedAnalysisStore)
+    // Redux: Add item from cart
+    this.props.addItem(deletedItemFromAnalysis)
   }
 
   getDetails = async (e, idx, loc, d) => {
     e.preventDefault();
 
-    if(this.state.index === idx && this.state.switch === loc) {
+    if (this.state.index === idx && this.state.switch === loc) {
       idx = ""
     }
-    
+
     this.setState({
       details: d,
       index: idx,
@@ -136,9 +91,9 @@ class Explore extends Component {
 
   handleRequest = async (e, d) => {
     e.preventDefault();
-    
-    const { REACT_APP_DAC_PORTAL_API_URL } = process.env	  
-    
+
+    const { REACT_APP_DAC_PORTAL_API_URL } = process.env
+
     axios({
       method: 'get',
       url: `${REACT_APP_DAC_PORTAL_API_URL}/user/policies`,
@@ -150,29 +105,29 @@ class Explore extends Component {
       },
     }).then(response => {
       console.log(response)
-      let setPolicy = {...this.state.requestData, 'policy': response.data[0].files[0].policy, 'dataset' : d.file_ID}
-      this.setState({request: true, requestData: setPolicy });
+      let setPolicy = { ...this.state.requestData, 'policy': response.data[0].files[0].policy, 'dataset': d.file_ID }
+      this.setState({ request: true, requestData: setPolicy });
     })
-    .catch(error => {
-      throw error;
-    });     
+      .catch(error => {
+        throw error;
+      });
   }
 
   closeRequest = () => {
-    this.setState({request: false});
+    this.setState({ request: false });
   }
 
   changeInput = (e) => {
     e.preventDefault();
-    let input = {...this.state.requestData, [e.target.getAttribute('name')] : e.target.value}
-    this.setState({requestData: input});
+    let input = { ...this.state.requestData, [e.target.getAttribute('name')]: e.target.value }
+    this.setState({ requestData: input });
   }
 
   submitRequest = (e) => {
     e.preventDefault();
 
     const { REACT_APP_DAC_PORTAL_API_URL } = process.env
-    
+
     axios({
       method: 'post',
       url: `${REACT_APP_DAC_PORTAL_API_URL}/user/request`,
@@ -180,36 +135,38 @@ class Explore extends Component {
         Authorization: "Bearer " + localStorage.getItem("react-token")
       },
       data:
-      { 'ds-id' : this.state.requestData.dataset, 
-        'policy' : this.state.requestData.policy,
-        'comments' : this.state.requestData.comments }
+      {
+        'ds-id': this.state.requestData.dataset,
+        'policy': this.state.requestData.policy,
+        'comments': this.state.requestData.comments
+      }
     }).then(response => {
       alert("Request submitted")
-      this.setState({request: false});
+      this.setState({ request: false });
     })
-    .catch(error => {
-      throw error;
-    });
+      .catch(error => {
+        throw error;
+      });
   }
 
   render() {
 
     let header = ""
     let body = ""
-    
-    if(this.state.option === "vre") {
-      if(this.props.selections[0].length != 0){
+
+    if (this.state.option === "vre") {
+      if (this.props.selections[0].length != 0) {
         header = (
           <div class="mt-5">
-              <div className={classes.leftbox}>
-                <p> Inspect and/or remove already loaded data sets into VRE. </p>
-              </div>
-              <div className={classes.rightbox}>
-                <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
-                <br/>
-              </div>
+            <div className={classes.leftbox}>
+              <p> Inspect and/or remove already loaded data sets into VRE. </p>
+            </div>
+            <div className={classes.rightbox}>
+              <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
+              <br />
+            </div>
           </div>
-          
+
         )
       } else {
         header = (
@@ -221,40 +178,40 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-          {this.props.selections[0].map((d, idx)=>{
-          return (
-            <div class="card mt-3 mb-2" key={idx}>
-              <div class="card-body"> 
-                <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                <button onClick={(e) => this.removeFromVRE(e, d, "vre")} class="btn btn-danger" style={{'margin-right' : "5px"}}> Unload data </button>
-                <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{'margin-right': "5px"}}> Get Details </button>
-                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
-                  <div>
-                    <table class="table table-hover table-bordered">
-                      <tbody>
-                        {Object.entries(this.state.details).map(([key, value]) => {
-                          return (
-                            <tr>
-                              <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
-                              <td> {value.toString()} </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </ItemsModal> 
-              </div>
-            </div>)
-          })} 
+          {this.props.selections[0].map((d, idx) => {
+            return (
+              <div class="card mt-3 mb-2" key={idx}>
+                <div class="card-body">
+                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                  <button onClick={(e) => this.removeFromAnalysis(e, d, "vre")} class="btn btn-danger" style={{ 'margin-right': "5px" }}> Unload data </button>
+                  <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{ 'margin-right': "5px" }}> Get Details </button>
+                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
+                    <div>
+                      <table class="table table-hover table-bordered">
+                        <tbody>
+                          {Object.entries(this.state.details).map(([key, value]) => {
+                            return (
+                              <tr>
+                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
+                                <td> {value.toString()} </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </ItemsModal>
+                </div>
+              </div>)
+          })}
         </div>
       )
-    } 
-    
+    }
+
     else if (this.state.option === "cavatica") {
-      if(this.props.selections[1].length != 0){
+      if (this.props.selections[1].length != 0) {
         header = (
           <div class="mt-5">
             <div className={classes.leftbox}>
@@ -262,7 +219,7 @@ class Explore extends Component {
             </div>
             <div className={classes.rightbox}>
               <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
-              <br/>
+              <br />
             </div>
           </div>
         )
@@ -276,40 +233,40 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-          {this.props.selections[1].map((d, idx)=>{
-          return (
-            <div class="card mt-3 mb-2" key={idx}>
-              <div class="card-body"> 
-                <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                <button onClick={(e) => this.removeFromVRE(e, d, "cavatica")} class="btn btn-danger" style={{"margin-right": "5px"}}> Unload data </button>
-                <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
-                  <div>
-                    <table class="table table-hover table-bordered">
-                      <tbody>
-                        {Object.entries(this.state.details).map(([key, value]) => {
-                          return (
-                            <tr>
-                              <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
-                              <td> {value.toString()} </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </ItemsModal> 
-              </div>
-            </div>)
-          })} 
-        </div>        
+          {this.props.selections[1].map((d, idx) => {
+            return (
+              <div class="card mt-3 mb-2" key={idx}>
+                <div class="card-body">
+                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                  <button onClick={(e) => this.removeFromAnalysis(e, d, "cavatica")} class="btn btn-danger" style={{ "margin-right": "5px" }}> Unload data </button>
+                  <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{ "margin-right": "5px" }}> Get Details </button>
+                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
+                    <div>
+                      <table class="table table-hover table-bordered">
+                        <tbody>
+                          {Object.entries(this.state.details).map(([key, value]) => {
+                            return (
+                              <tr>
+                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
+                                <td> {value.toString()} </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </ItemsModal>
+                </div>
+              </div>)
+          })}
+        </div>
       )
     }
 
     else if (this.state.option === "preselected") {
-      if(this.props.cartWhitelist.length == 0 && this.props.cartBlacklist.length == 0) {
+      if (this.props.cartWhitelist.length == 0 && this.props.cartBlacklist.length == 0) {
         header = (
           <div class="mt-5 text-center">
             <p> <strong> The cart items list is empty. Please go first to the <a href="/filerepository"> File Repository </a> section and select data you might be interested in. </strong> </p>
@@ -325,71 +282,71 @@ class Explore extends Component {
 
       body = (
         <div class="mt-5">
-        {this.props.cartWhitelist.map((d, idx)=>{
-          return (
-            <div class="card mt-3 mb-2" key={idx}>
-              <div class="card-body"> 
-                <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                <button onClick={(e) => this.postToVRE(e, d, "vre")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to VRE </button>
-                <button onClick={(e) => this.postToVRE(e, d, "cavatica")} class="btn btn-success" style={{"margin-right": "5px"}}> Load to Cavatica </button>
-                <button onClick={(e) => this.getDetails(e, idx, "allowedItems", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="allowedItems">
-                  <div>
-                    <table class="table table-hover table-bordered">
-                      <tbody>
-                        {Object.entries(this.state.details).map(([key,value])=>{
-                          return (    
-                            <tr>
-                              <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+          {this.props.cartWhitelist.map((d, idx) => {
+            return (
+              <div class="card mt-3 mb-2" key={idx}>
+                <div class="card-body">
+                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                  <button onClick={(e) => this.sendToAnalysis(e, d, "vre")} class="btn btn-success" style={{ "margin-right": "5px" }}> Load to VRE </button>
+                  <button onClick={(e) => this.sendToAnalysis(e, d, "cavatica")} class="btn btn-success" style={{ "margin-right": "5px" }}> Load to Cavatica </button>
+                  <button onClick={(e) => this.getDetails(e, idx, "allowedItems", d)} className={classes2.ipcButton} style={{ "margin-right": "5px" }}> Get Details </button>
+                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="allowedItems">
+                    <div>
+                      <table class="table table-hover table-bordered">
+                        <tbody>
+                          {Object.entries(this.state.details).map(([key, value]) => {
+                            return (
+                              <tr>
+                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
                                 <td> {value.toString()} </td>
-                            </tr>
+                              </tr>
                             );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </ItemsModal> 
-              </div>
-            </div>)
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </ItemsModal>
+                </div>
+              </div>)
           })}
-        {this.props.cartBlacklist.map((d, idx)=>{
-          return (
-            <div class="card mt-3 mb-2" key={idx}>
-              <div class="card-body"> 
-                <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                <button onClick={(e) => this.getDetails(e, idx, "restrictedItems", d)} className={classes2.ipcButton} style={{"margin-right": "5px"}}> Get Details </button>
-                <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="restrictedItems">
-                  <div>
-                    <table class="table table-hover table-bordered">
-                      <tbody>
-                        {Object.entries(this.state.details).map(([key,value])=>{
-                          return (    
-                            <tr>
-                              <th scope="row" style={{"color": "#75B9BE"}}> {key} </th>
+          {this.props.cartBlacklist.map((d, idx) => {
+            return (
+              <div class="card mt-3 mb-2" key={idx}>
+                <div class="card-body">
+                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
+                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
+                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
+                  <button onClick={(e) => this.getDetails(e, idx, "restrictedItems", d)} className={classes2.ipcButton} style={{ "margin-right": "5px" }}> Get Details </button>
+                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="restrictedItems">
+                    <div>
+                      <table class="table table-hover table-bordered">
+                        <tbody>
+                          {Object.entries(this.state.details).map(([key, value]) => {
+                            return (
+                              <tr>
+                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
                                 <td> {value.toString()} </td>
-                            </tr>
+                              </tr>
                             );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </ItemsModal> 
-                { d.DAC_ID === undefined ? 
-                  <button class="btn btn-warning" style={{"margin-right": "5px"}} disabled> Request Access </button> :
-                  <button class="btn btn-warning" style={{"margin-right": "5px"}} onClick={(e) => this.handleRequest(e, d, idx)}> Request Access </button> 
-                }
-              </div>
-            </div>)
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </ItemsModal>
+                  {d.dac_ID === undefined ?
+                    <button class="btn btn-warning" style={{ "margin-right": "5px" }} disabled> Request Access </button> :
+                    <button class="btn btn-warning" style={{ "margin-right": "5px" }} onClick={(e) => this.handleRequest(e, d, idx)}> Request Access </button>
+                  }
+                </div>
+              </div>)
           })}
-        </div>    
+        </div>
       )
     }
 
-    if(this.state.option === "export") {
+    if (this.state.option === "export") {
       header = (
         <div class="mt-5 text-center">
           <p> <strong> Here you can download metadata associated to the catalogue selections. </strong> </p>
@@ -398,26 +355,26 @@ class Explore extends Component {
       body = (
         <div class="container">
           <div class="row mt-5">
-              <table class="table table-hover">             
-                <tbody>
-                  <tr>
-                    <th scope="row" style={{"color": "#005076"}}> Virtual research environment </th>
-                    <td> <CSVLink data={this.props.selections[0]}> Download </CSVLink> </td>
-                  </tr> 
-                  <tr>
-                    <th scope="row" style={{"color": "#005076"}}> Cavatica </th>
-                    <td> <CSVLink data={this.props.selections[1]}> Download </CSVLink> </td>
-                  </tr>
-                  <tr>
-                    <th scope="row" style={{"color": "#005076"}}> Preselected with access (cart) </th>
-                    <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
-                  </tr>
-                  <tr>
-                    <th scope="row" style={{"color": "#005076"}}> Preselected without access (cart) </th>
-                    <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
-                  </tr>
-                </tbody>
-              </table>
+            <table class="table table-hover">
+              <tbody>
+                <tr>
+                  <th scope="row" style={{ "color": "#005076" }}> Virtual research environment </th>
+                  <td> <CSVLink data={this.props.selections[0]}> Download </CSVLink> </td>
+                </tr>
+                <tr>
+                  <th scope="row" style={{ "color": "#005076" }}> Cavatica </th>
+                  <td> <CSVLink data={this.props.selections[1]}> Download </CSVLink> </td>
+                </tr>
+                <tr>
+                  <th scope="row" style={{ "color": "#005076" }}> Preselected with access (cart) </th>
+                  <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
+                </tr>
+                <tr>
+                  <th scope="row" style={{ "color": "#005076" }}> Preselected without access (cart) </th>
+                  <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       )
@@ -426,16 +383,16 @@ class Explore extends Component {
 
     return (
       <React.Fragment>
-        <br/>
+        <br />
         <div class="container-fluid">
           <div class="row">
             <div class="col-lg-12 text-left mt-5 mb-5 pl-5 pr-5">
               <h1> Data Management </h1>
-              <br/>
-              <br/>
-              <p style={{ "color" : "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
-              <br/> 
-              <section> 
+              <br />
+              <br />
+              <p style={{ "color": "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
+              <br />
+              <section>
                 <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.selectionHandler(index)}>
                   <TabList>
                     <Tab> Preselected from catalogue </Tab>
@@ -449,12 +406,12 @@ class Explore extends Component {
                   </TabPanel>
                   <TabPanel>
                     {header}
-                    <br/>
+                    <br />
                     {body}
                   </TabPanel>
                   <TabPanel>
                     {header}
-                    <br/>
+                    <br />
                     {body}
                   </TabPanel>
                   <TabPanel>
@@ -466,14 +423,14 @@ class Explore extends Component {
             </div>
           </div>
         </div>
-        <RequestModal show={this.state.request} 
-                      close={this.closeRequest}
-                      submit={this.submitRequest} 
-                      input={this.changeInput} 
-                      comments={comments}
-                      policy={policy}   
-                      dataset={dataset}    
-                      />      
+        <RequestModal show={this.state.request}
+          close={this.closeRequest}
+          submit={this.submitRequest}
+          input={this.changeInput}
+          comments={comments}
+          policy={policy}
+          dataset={dataset}
+        />
       </React.Fragment>
     )
   }
