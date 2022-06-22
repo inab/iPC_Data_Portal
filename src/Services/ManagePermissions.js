@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-const { REACT_APP_PERMISSIONS_URL } = process.env;
-
 // Permissions-API: Get user dataset permissions in the form of visas (GA4GH spec)
 const getUserDatasetPermissions = async () => {
+    const { REACT_APP_PERMISSIONS_URL } = process.env;
     const response = await axios({
         method: 'get',
         url: `${REACT_APP_PERMISSIONS_URL}/me/permissions?format=PLAIN`, 
