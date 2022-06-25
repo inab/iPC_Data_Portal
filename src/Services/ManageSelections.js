@@ -22,7 +22,7 @@ const addItemForAnalysis = async (data) => {
         }
     })
 
-    return JSON.parse(results.config.data)
+    return [JSON.parse(results.config.data)]
 }
 
 const removeItemFromAnalysis = async (data) => {
@@ -43,7 +43,7 @@ const removeItemFromAnalysis = async (data) => {
 
 // REDUX STORE (CART/ANALYSIS SELECTIONS): Add/Remove items from the store.
 const addItemToAnalysisStore = (item, selection, store) => {
-
+    
     let userSelectionsStore;
 
     if (item.analysis === "vre") {
