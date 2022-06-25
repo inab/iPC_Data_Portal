@@ -1,5 +1,5 @@
 import CartActionTypes from './cart.types';
-import { addItemToCart } from './cart.utils';
+import { addItemToCart, removeItemFromCart } from './cart.utils';
 
 const INITIAL_STATE = {
   cartWhitelist: [],
@@ -21,8 +21,8 @@ const cartReducer = (state = INITIAL_STATE, action) => {
     case CartActionTypes.REMOVE_ITEM:
       return {
         ...state,
-        cartWhitelist: state.cartWhitelist.filter((el) => el.file_ID !== action.payload._id),
-        cartBlacklist: state.cartBlacklist.filter((el) => el.file_ID !== action.payload._id)
+        cartWhitelist: removeItemFromCart(state.cartWhitelist, action.payload),
+        cartBlacklist: removeItemFromCart(state.cartBlacklist, action.payload)
       };
     default:
       return state;
