@@ -5,12 +5,14 @@ import { updateUserSelections } from '../../Redux/userSelections/userSelections.
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import TabCard from "../../components/TabPanelContent/Cards";
 import RequestModal from "../../components/Navigation/Modal/Requests";
-import { CSVLink } from "react-csv";
+import DownloadCSV from "../../components/TabPanelContent/DownloadCSV";
 import { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysisStore, removeItemFromAnalysis } from "../../Services/ManageSelections";
 import { getDataPolicies, submitDataRequest } from "../../Services/ManageRequests";
 import classes from './Explore.module.css';
 import classes2 from '../../App.module.css';
 import 'react-tabs/style/react-tabs.scss';
+
+const DOWNLOAD_LABELS = ["Virtual research environment", "Cavatica", "Preselected with access (cart)", "Preselected without access (cart)"];
 
 class Explore extends Component {
   state = {
@@ -190,31 +192,10 @@ class Explore extends Component {
                     <div class="mt-5 text-center">
                       <p> <strong> Here you can download metadata associated to the catalogue selections. </strong> </p>
                     </div>
-                    <br/>
-                    <div class="container">
-                      <div class="row mt-5">
-                        <table class="table table-hover">
-                          <tbody>
-                            <tr>
-                              <th scope="row" style={{ "color": "#005076" }}> Virtual research environment </th>
-                              <td> <CSVLink data={this.props.selections[0]}> Download </CSVLink> </td>
-                            </tr>
-                            <tr>
-                              <th scope="row" style={{ "color": "#005076" }}> Cavatica </th>
-                              <td> <CSVLink data={this.props.selections[1]}> Download </CSVLink> </td>
-                            </tr>
-                            <tr>
-                              <th scope="row" style={{ "color": "#005076" }}> Preselected with access (cart) </th>
-                              <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
-                            </tr>
-                            <tr>
-                              <th scope="row" style={{ "color": "#005076" }}> Preselected without access (cart) </th>
-                              <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                    <DownloadCSV collections={[ { items: this.props.selections[0], label: DOWNLOAD_LABELS[0] }, 
+                                                { items: this.props.selections[1], label: DOWNLOAD_LABELS[1] }, 
+                                                { items: this.props.cartWhitelist, label: DOWNLOAD_LABELS[2] },
+                                                { items: this.props.cartBlacklist, label: DOWNLOAD_LABELS[3] } ]} />                      
                   </TabPanel>
                 </Tabs>
               </section>
