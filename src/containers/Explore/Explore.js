@@ -12,7 +12,28 @@ import classes from './Explore.module.css';
 import classes2 from '../../App.module.css';
 import 'react-tabs/style/react-tabs.scss';
 
-const DOWNLOAD_LABELS = ["Virtual research environment", "Cavatica", "Preselected with access (cart)", "Preselected without access (cart)"];
+const DOWNLOAD_LABELS = { 
+  vre: "Virtual research environment", 
+  cavatica: "Cavatica", 
+  preselectedWithAccess: "Preselected with access (cart)", 
+  preselectedWithoutAccess: "Preselected without access (cart)"
+};
+
+const TAB_LABELS = {
+  vre: "Virtual research environment", 
+  cavatica: "Cavatica", 
+  preselected: "Preselected from catalogue", 
+  export: "Export metadata"
+};
+
+const DESCRIPTIONS_LABELS = {
+  general: "Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed.",
+  preselectedEmpty: "The cart items list is empty. Please go first to the Search section and select data you might be interested in.", 
+  preselectedExists: "Inspect, load data sets for their analysis, or make access requests.", 
+  analysisEmpty: "No datasets have been imported.", 
+  analysisExists: "Inspect and/or remove already loaded data sets.",
+  export: "Here you can download metadata associated to the catalogue selections."
+};
 
 class Explore extends Component {
   state = {
@@ -96,21 +117,21 @@ class Explore extends Component {
               <h1> Data Management </h1>
               <br />
               <br />
-              <p style={{ "color": "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
+              <p style={{ "color": "#A9A9A9" }}> <strong> {DESCRIPTIONS_LABELS["general"]} </strong> </p>
               <br />
               <section>
                 <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.handleTab(index)}>
                   <TabList>
-                    <Tab> Preselected from catalogue </Tab>
-                    <Tab> Virtual Research Environment </Tab>
-                    <Tab> Cavatica </Tab>
-                    <Tab> Export metadata </Tab>
+                    <Tab> {TAB_LABELS["preselected"]} </Tab>
+                    <Tab> {TAB_LABELS["vre"]} </Tab>
+                    <Tab> {TAB_LABELS["cavatica"]} </Tab>
+                    <Tab> {TAB_LABELS["export"]}</Tab>
                   </TabList>
                   <TabPanel>
                     {this.props.cartWhitelist.length !== 0 || this.props.cartBlacklist.length !== 0 ?
                       <>
                         <div class="mt-5">
-                          <p> Inspect, load data sets for their analysis, or make access requests. </p>
+                          <p> {DESCRIPTIONS_LABELS["preselectedExists"]} </p>
                         </div>
                         <br/>
                         <TabCard selections={this.props.cartWhitelist}
@@ -129,7 +150,7 @@ class Explore extends Component {
                                  currentSwitch="restrictedItems" />
                       </> : (
                         <div class="mt-5 text-center">
-                          <p> <strong> The cart items list is empty. Please go first to the <a href="/filerepository"> File Repository </a> section and select data you might be interested in. </strong> </p>
+                          <p> <strong> {DESCRIPTIONS_LABELS["preselectedEmpty"]} </strong> </p>
                         </div>
                       )
                     }
@@ -139,7 +160,7 @@ class Explore extends Component {
                       <>
                         <div class="mt-5">
                           <div className={classes.leftbox}>
-                            <p> Inspect and/or remove already loaded data sets. </p>
+                            <p> {DESCRIPTIONS_LABELS["analysisExists"]} </p>
                           </div>
                           <div className={classes.rightbox}>
                             <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
@@ -156,7 +177,7 @@ class Explore extends Component {
                                  currentSwitch="vre" />
                       </> : (
                         <div class="mt-5 text-center">
-                          <p> <strong> No datasets have been imported. </strong> </p>
+                          <p> <strong> {DESCRIPTIONS_LABELS["analysisEmpty"]} </strong> </p>
                         </div>
                       )
                     }
@@ -166,7 +187,7 @@ class Explore extends Component {
                       <>
                         <div class="mt-5">
                           <div className={classes.leftbox}>
-                            <p> Inspect and/or remove already loaded data sets. </p>
+                            <p> {DESCRIPTIONS_LABELS["analysisExists"]} </p>
                           </div>
                           <div className={classes.rightbox}>
                             <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
@@ -183,19 +204,19 @@ class Explore extends Component {
                                  currentSwitch="cavatica" />
                       </> : (
                         <div class="mt-5 text-center">
-                          <p> <strong> No datasets have been imported. </strong> </p>
+                          <p> <strong> {DESCRIPTIONS_LABELS["analysisEmpty"]} </strong> </p>
                         </div>
                       )
                     }
                   </TabPanel>
                   <TabPanel>
                     <div class="mt-5 text-center">
-                      <p> <strong> Here you can download metadata associated to the catalogue selections. </strong> </p>
+                      <p> <strong> {DESCRIPTIONS_LABELS["export"]} </strong> </p>
                     </div>
-                    <DownloadCSV collections={[ { items: this.props.selections[0], label: DOWNLOAD_LABELS[0] }, 
-                                                { items: this.props.selections[1], label: DOWNLOAD_LABELS[1] }, 
-                                                { items: this.props.cartWhitelist, label: DOWNLOAD_LABELS[2] },
-                                                { items: this.props.cartBlacklist, label: DOWNLOAD_LABELS[3] } ]} />                      
+                    <DownloadCSV collections={[ { items: this.props.selections[0], label: DOWNLOAD_LABELS["vre"] }, 
+                                                { items: this.props.selections[1], label: DOWNLOAD_LABELS["cavatica"] }, 
+                                                { items: this.props.cartWhitelist, label: DOWNLOAD_LABELS["preselectedWithAccess"] },
+                                                { items: this.props.cartBlacklist, label: DOWNLOAD_LABELS["preselectedWithoutAccess"] } ]} />                      
                   </TabPanel>
                 </Tabs>
               </section>
