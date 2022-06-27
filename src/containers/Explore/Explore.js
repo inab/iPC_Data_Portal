@@ -1,55 +1,29 @@
 import React, { Component } from 'react';
-import classes from './Explore.module.css';
-import classes2 from '../../App.module.css';
-import ItemsModal from '../../components/Navigation/Modal/Modal';
 import { connect } from 'react-redux';
 import { addItem, removeItem } from '../../Redux/cart/cart.actions';
 import { updateUserSelections } from '../../Redux/userSelections/userSelections.actions';
-import { CSVLink } from "react-csv";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.scss';
-import RequestModal from "../../components/Navigation/Modal/RequestModal";
+import TabCard from "../../components/TabPanelContent/Cards";
+import RequestModal from "../../components/Navigation/Modal/Requests";
+import { CSVLink } from "react-csv";
 import { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysisStore, removeItemFromAnalysis } from "../../Services/ManageSelections";
 import { getDataPolicies, submitDataRequest } from "../../Services/ManageRequests";
+import classes from './Explore.module.css';
+import classes2 from '../../App.module.css';
+import 'react-tabs/style/react-tabs.scss';
 
 class Explore extends Component {
   state = {
-    changed: false,
     details: [],
     index: "",
     switch: "",
-    option: "preselected",
     selectedTab: 0,
-    dataToExport: [],
     request: false,
-    requestData: {
-      "comments": "",
-      "policy": "",
-      "dataset": ""
-    }
+    requestData: { comments: "", policy: "", dataset: "" }
   }
 
-  selectionHandler = (option) => {
-    let name = ""
-    switch (option) {
-      case 0:
-        name = "preselected";
-        break;
-      case 1:
-        name = "vre";
-        break;
-      case 2:
-        name = "cavatica";
-        break;
-      case 3:
-        name = "export";
-        break;
-    }
-
-    this.setState({
-      option: name,
-      selectedTab: option
-    })
+  handleTab = (tab) => {
+    this.setState({ selectedTab: tab })
   }
 
   sendToAnalysis = async (e, d, analysis) => {
@@ -77,22 +51,16 @@ class Explore extends Component {
   getDetails = async (e, idx, loc, d) => {
     e.preventDefault();
 
-    if (this.state.index === idx && this.state.switch === loc) {
-      idx = ""
-    }
+    if (this.state.index === idx && this.state.switch === loc) idx = ""
 
-    this.setState({
-      details: d,
-      index: idx,
-      switch: loc
-    })
+    this.setState({ details: d, index: idx, switch: loc })
   }
 
   handleRequest = async (e, d) => {
     e.preventDefault();
     const itemPolicy = await getDataPolicies(d);
     const setPolicy = { ...this.state.requestData, 'policy': itemPolicy.policy, 'dataset': itemPolicy.dataset }
-    this.setState({ request: true, requestData: setPolicy});
+    this.setState({ request: true, requestData: setPolicy });
   }
 
   closeRequest = () => {
@@ -115,238 +83,10 @@ class Explore extends Component {
 
   render() {
 
-    let header = ""
-    let body = ""
-
-    if (this.state.option === "vre") {
-      if (this.props.selections[0].length != 0) {
-        header = (
-          <div class="mt-5">
-            <div className={classes.leftbox}>
-              <p> Inspect and/or remove already loaded data sets into VRE. </p>
-            </div>
-            <div className={classes.rightbox}>
-              <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
-              <br />
-            </div>
-          </div>
-
-        )
-      } else {
-        header = (
-          <div class="mt-5 text-center">
-            <p> <strong> No datasets have been imported to the Virtual Research Environment. </strong> </p>
-          </div>
-        )
-      }
-
-      body = (
-        <div class="mt-5">
-          {this.props.selections[0].map((d, idx) => {
-            return (
-              <div class="card mt-3 mb-2" key={idx}>
-                <div class="card-body">
-                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                  <button onClick={(e) => this.removeFromAnalysis(e, d, "vre")} class="btn btn-danger" style={{ 'margin-right': "5px" }}> Unload data </button>
-                  <button onClick={(e) => this.getDetails(e, idx, "vre", d)} className={classes2.ipcButton} style={{ 'margin-right': "5px" }}> Get Details </button>
-                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="vre">
-                    <div>
-                      <table class="table table-hover table-bordered">
-                        <tbody>
-                          {Object.entries(this.state.details).map(([key, value]) => {
-                            return (
-                              <tr>
-                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
-                                <td> {value.toString()} </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </ItemsModal>
-                </div>
-              </div>)
-          })}
-        </div>
-      )
-    }
-
-    else if (this.state.option === "cavatica") {
-      if (this.props.selections[1].length != 0) {
-        header = (
-          <div class="mt-5">
-            <div className={classes.leftbox}>
-              <p> Inspect and/or remove already loaded data sets into Cavatica. </p>
-            </div>
-            <div className={classes.rightbox}>
-              <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
-              <br />
-            </div>
-          </div>
-        )
-      } else {
-        header = (
-          <div class="mt-5 text-center">
-            <p> <strong> No datasets have been imported to Cavatica. </strong> </p>
-          </div>
-        )
-      }
-
-      body = (
-        <div class="mt-5">
-          {this.props.selections[1].map((d, idx) => {
-            return (
-              <div class="card mt-3 mb-2" key={idx}>
-                <div class="card-body">
-                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                  <button onClick={(e) => this.removeFromAnalysis(e, d, "cavatica")} class="btn btn-danger" style={{ "margin-right": "5px" }}> Unload data </button>
-                  <button onClick={(e) => this.getDetails(e, idx, "cavatica", d)} className={classes2.ipcButton} style={{ "margin-right": "5px" }}> Get Details </button>
-                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="cavatica">
-                    <div>
-                      <table class="table table-hover table-bordered">
-                        <tbody>
-                          {Object.entries(this.state.details).map(([key, value]) => {
-                            return (
-                              <tr>
-                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
-                                <td> {value.toString()} </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </ItemsModal>
-                </div>
-              </div>)
-          })}
-        </div>
-      )
-    }
-
-    else if (this.state.option === "preselected") {
-      if (this.props.cartWhitelist.length == 0 && this.props.cartBlacklist.length == 0) {
-        header = (
-          <div class="mt-5 text-center">
-            <p> <strong> The cart items list is empty. Please go first to the <a href="/filerepository"> File Repository </a> section and select data you might be interested in. </strong> </p>
-          </div>
-        )
-      } else {
-        header = (
-          <div class="mt-5">
-            <p> Inspect, load data sets for their analysis, or make access requests. </p>
-          </div>
-        )
-      }
-
-      body = (
-        <div class="mt-5">
-          {this.props.cartWhitelist.map((d, idx) => {
-            return (
-              <div class="card mt-3 mb-2" key={idx}>
-                <div class="card-body">
-                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                  <button onClick={(e) => this.sendToAnalysis(e, d, "vre")} class="btn btn-success" style={{ "margin-right": "5px" }}> Load to VRE </button>
-                  <button onClick={(e) => this.sendToAnalysis(e, d, "cavatica")} class="btn btn-success" style={{ "margin-right": "5px" }}> Load to Cavatica </button>
-                  <button onClick={(e) => this.getDetails(e, idx, "allowedItems", d)} className={classes2.ipcButton} style={{ "margin-right": "5px" }}> Get Details </button>
-                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="allowedItems">
-                    <div>
-                      <table class="table table-hover table-bordered">
-                        <tbody>
-                          {Object.entries(this.state.details).map(([key, value]) => {
-                            return (
-                              <tr>
-                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
-                                <td> {value.toString()} </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </ItemsModal>
-                </div>
-              </div>)
-          })}
-          {this.props.cartBlacklist.map((d, idx) => {
-            return (
-              <div class="card mt-3 mb-2" key={idx}>
-                <div class="card-body">
-                  <h4 class="card-title"> fileID : {d.file_ID} </h4>
-                  <p class="card-text"> <i> file_locator : {d.file_external_ID} </i> </p>
-                  <p class="card-text"> <i> es_host : {d.es_index} </i> </p>
-                  <button onClick={(e) => this.getDetails(e, idx, "restrictedItems", d)} className={classes2.ipcButton} style={{ "margin-right": "5px" }}> Get Details </button>
-                  <ItemsModal stateIdx={this.state.index} currentIdx={idx} stateSwitch={this.state.switch} currentSwitch="restrictedItems">
-                    <div>
-                      <table class="table table-hover table-bordered">
-                        <tbody>
-                          {Object.entries(this.state.details).map(([key, value]) => {
-                            return (
-                              <tr>
-                                <th scope="row" style={{ "color": "#75B9BE" }}> {key} </th>
-                                <td> {value.toString()} </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </ItemsModal>
-                  {d.dac_ID === undefined ?
-                    <button class="btn btn-warning" style={{ "margin-right": "5px" }} disabled> Request Access </button> :
-                    <button class="btn btn-warning" style={{ "margin-right": "5px" }} onClick={(e) => this.handleRequest(e, d, idx)}> Request Access </button>
-                  }
-                </div>
-              </div>)
-          })}
-        </div>
-      )
-    }
-
-    if (this.state.option === "export") {
-      header = (
-        <div class="mt-5 text-center">
-          <p> <strong> Here you can download metadata associated to the catalogue selections. </strong> </p>
-        </div>
-      )
-      body = (
-        <div class="container">
-          <div class="row mt-5">
-            <table class="table table-hover">
-              <tbody>
-                <tr>
-                  <th scope="row" style={{ "color": "#005076" }}> Virtual research environment </th>
-                  <td> <CSVLink data={this.props.selections[0]}> Download </CSVLink> </td>
-                </tr>
-                <tr>
-                  <th scope="row" style={{ "color": "#005076" }}> Cavatica </th>
-                  <td> <CSVLink data={this.props.selections[1]}> Download </CSVLink> </td>
-                </tr>
-                <tr>
-                  <th scope="row" style={{ "color": "#005076" }}> Preselected with access (cart) </th>
-                  <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
-                </tr>
-                <tr>
-                  <th scope="row" style={{ "color": "#005076" }}> Preselected without access (cart) </th>
-                  <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )
-    }
     let { comments, policy, dataset } = this.state.requestData
 
     return (
-      <React.Fragment>
+      <>
         <br />
         <div class="container-fluid">
           <div class="row">
@@ -357,7 +97,7 @@ class Explore extends Component {
               <p style={{ "color": "#A9A9A9" }}> <strong> Here iPC users can expose data to the different analysis platforms, inspect their associated metadata, and request for data access if needed. </strong> </p>
               <br />
               <section>
-                <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.selectionHandler(index)}>
+                <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.handleTab(index)}>
                   <TabList>
                     <Tab> Preselected from catalogue </Tab>
                     <Tab> Virtual Research Environment </Tab>
@@ -365,22 +105,116 @@ class Explore extends Component {
                     <Tab> Export metadata </Tab>
                   </TabList>
                   <TabPanel>
-                    {header}
-                    {body}
+                    {this.props.cartWhitelist.length !== 0 || this.props.cartBlacklist.length !== 0 ?
+                      <>
+                        <div class="mt-5">
+                          <p> Inspect, load data sets for their analysis, or make access requests. </p>
+                        </div>
+                        <br/>
+                        <TabCard selections={this.props.cartWhitelist}
+                                 sendToAnalysis={this.sendToAnalysis}
+                                 getDetails={this.getDetails}
+                                 stateDetails={this.state.details}
+                                 stateIdx={this.state.index}
+                                 stateSwitch={this.state.switch}
+                                 currentSwitch="allowedItems" />
+                        <TabCard selections={this.props.cartBlacklist}
+                                 getDetails={this.getDetails}
+                                 handleRequest={this.handleRequest}
+                                 stateDetails={this.state.details}
+                                 stateIdx={this.state.index}
+                                 stateSwitch={this.state.switch}
+                                 currentSwitch="restrictedItems" />
+                      </> : (
+                        <div class="mt-5 text-center">
+                          <p> <strong> The cart items list is empty. Please go first to the <a href="/filerepository"> File Repository </a> section and select data you might be interested in. </strong> </p>
+                        </div>
+                      )
+                    }
                   </TabPanel>
                   <TabPanel>
-                    {header}
-                    <br />
-                    {body}
+                    {this.props.selections[0].length !== 0 ?
+                      <>
+                        <div class="mt-5">
+                          <div className={classes.leftbox}>
+                            <p> Inspect and/or remove already loaded data sets. </p>
+                          </div>
+                          <div className={classes.rightbox}>
+                            <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
+                            <br />
+                          </div>
+                        </div>
+                        <br/>
+                        <TabCard selections={this.props.selections[0]}
+                                 removeFromAnalysis={this.removeFromAnalysis}
+                                 getDetails={this.getDetails}
+                                 stateDetails={this.state.details}
+                                 stateIdx={this.state.index}
+                                 stateSwitch={this.state.switch}
+                                 currentSwitch="vre" />
+                      </> : (
+                        <div class="mt-5 text-center">
+                          <p> <strong> No datasets have been imported. </strong> </p>
+                        </div>
+                      )
+                    }
                   </TabPanel>
                   <TabPanel>
-                    {header}
-                    <br />
-                    {body}
+                    {this.props.selections[1].length !== 0 ?
+                      <>
+                        <div class="mt-5">
+                          <div className={classes.leftbox}>
+                            <p> Inspect and/or remove already loaded data sets. </p>
+                          </div>
+                          <div className={classes.rightbox}>
+                            <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
+                            <br />
+                          </div>
+                        </div>
+                        <br/>
+                        <TabCard selections={this.props.selections[1]}
+                                 removeFromAnalysis={this.removeFromAnalysis}
+                                 getDetails={this.getDetails}
+                                 stateDetails={this.state.details}
+                                 stateIdx={this.state.index}
+                                 stateSwitch={this.state.switch}
+                                 currentSwitch="cavatica" />
+                      </> : (
+                        <div class="mt-5 text-center">
+                          <p> <strong> No datasets have been imported. </strong> </p>
+                        </div>
+                      )
+                    }
                   </TabPanel>
                   <TabPanel>
-                    {header}
-                    {body}
+                    <div class="mt-5 text-center">
+                      <p> <strong> Here you can download metadata associated to the catalogue selections. </strong> </p>
+                    </div>
+                    <br/>
+                    <div class="container">
+                      <div class="row mt-5">
+                        <table class="table table-hover">
+                          <tbody>
+                            <tr>
+                              <th scope="row" style={{ "color": "#005076" }}> Virtual research environment </th>
+                              <td> <CSVLink data={this.props.selections[0]}> Download </CSVLink> </td>
+                            </tr>
+                            <tr>
+                              <th scope="row" style={{ "color": "#005076" }}> Cavatica </th>
+                              <td> <CSVLink data={this.props.selections[1]}> Download </CSVLink> </td>
+                            </tr>
+                            <tr>
+                              <th scope="row" style={{ "color": "#005076" }}> Preselected with access (cart) </th>
+                              <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
+                            </tr>
+                            <tr>
+                              <th scope="row" style={{ "color": "#005076" }}> Preselected without access (cart) </th>
+                              <td> <CSVLink data={this.props.cartWhitelist}> Download </CSVLink> </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </TabPanel>
                 </Tabs>
               </section>
@@ -395,7 +229,7 @@ class Explore extends Component {
           policy={policy}
           dataset={dataset}
         />
-      </React.Fragment>
+      </>
     )
   }
 }
