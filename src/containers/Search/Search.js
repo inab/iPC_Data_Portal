@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { addItem } from '../../Redux/cart/cart.actions';
-import mainClasses from '../../App.module.css';
 
 import {
   PORTAL_NAME,
@@ -63,11 +62,11 @@ class Search extends Component {
 
   render() {
 
-    var button = (<button className={mainClasses.ipcButton} onClick={this.cartHandler}>
+    var button = (<button class="ipc-button" onClick={this.cartHandler}>
       Add to cart
     </button>)
 
-    var buttonRefresh = (<button className={mainClasses.ipcButton} onClick={this.refreshProject}>
+    var buttonRefresh = (<button class="ipc-button" onClick={this.refreshProject}>
       Change Project
     </button>)
 

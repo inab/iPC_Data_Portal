@@ -1,6 +1,6 @@
 import React from 'react';
 import DetailsModal from '../Navigation/Modal/Details';
-import classes2 from '../../App.module.css';
+//import classes2 from '../../App.module.css';
 
 const Cards = (props) => {
 
@@ -46,7 +46,7 @@ const Cards = (props) => {
                                     null
                                 }
 
-                                <button onClick={(e) => getDetails(e, idx, currentSwitch, item)} className={classes2.ipcButton} style={{ 'margin-right': "5px" }}> Get Details </button>
+                                <button onClick={(e) => getDetails(e, idx, currentSwitch, item)} class="ipc-button" style={{ 'margin-right': "5px" }}> Get Details </button>
 
                                 <DetailsModal stateIdx={stateIdx} currentIdx={idx} stateSwitch={stateSwitch} currentSwitch={currentSwitch}>
                                     <div>
