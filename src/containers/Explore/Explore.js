@@ -154,7 +154,7 @@ class Explore extends Component {
                     }
                   </TabPanel>
                   <TabPanel>
-                    {this.props.selections[0].length !== 0 ?
+                    {this.props.selections.length !== 0 && this.props.selections[0].length !== 0 ?
                       <>
                         <div class="row mt-5">
                           <div class="col-9">
@@ -181,7 +181,7 @@ class Explore extends Component {
                     }
                   </TabPanel>
                   <TabPanel>
-                    {this.props.selections[1].length !== 0 ?
+                    {this.props.selections.length !== 0 && this.props.selections[1].length !== 0 ?
                       <>
                         <div class="row mt-5">
                           <div class="col-9">

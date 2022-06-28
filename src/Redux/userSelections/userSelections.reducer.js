@@ -1,7 +1,7 @@
 import userSelectionsTypes from './userSelections.types';
 
 const INITIAL_STATE = {
-  userSelections: [],
+  selections: [],
   //isFetching: false,
   //errorMessage: undefined
 };

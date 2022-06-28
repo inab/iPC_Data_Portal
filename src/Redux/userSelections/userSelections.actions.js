@@ -22,7 +22,7 @@ export const fetchUserSelections = () => {
     //dispatch(fetchUserSelectionsBegin());
     const datasetsLocators = await getDatasetsLocators();
     const datasetsMetadata = await getDatasetsMetadata(datasetsLocators);
-    const selectionsStore = await generateSelectionsStore(datasetsMetadata); 
+    const selectionsStore = generateSelectionsStore(datasetsMetadata); 
     dispatch(fetchUserSelectionsSuccess(selectionsStore));
     //dispatch(fetchUserSelectionsSuccess([selectionsStore[0]], [selectionsStore[1]]));
   }
