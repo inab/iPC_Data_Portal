@@ -8,8 +8,6 @@ import RequestModal from "../../components/Navigation/Modal/Requests";
 import DownloadCSV from "../../components/TabPanelContent/DownloadCSV";
 import { addItemForAnalysis, addItemToAnalysisStore, removeItemFromAnalysisStore, removeItemFromAnalysis } from "../../Services/ManageSelections";
 import { getDataPolicies, submitDataRequest } from "../../Services/ManageRequests";
-import classes from './Explore.module.css';
-import classes2 from '../../App.module.css';
 import 'react-tabs/style/react-tabs.scss';
 
 const DOWNLOAD_LABELS = { 
@@ -158,12 +156,12 @@ class Explore extends Component {
                   <TabPanel>
                     {this.props.selections[0].length !== 0 ?
                       <>
-                        <div class="mt-5">
-                          <div className={classes.leftbox}>
+                        <div class="row mt-5">
+                          <div class="col-9">
                             <p> {DESCRIPTIONS_LABELS["analysisExists"]} </p>
                           </div>
-                          <div className={classes.rightbox}>
-                            <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" className={classes2.ipcButton}> Go to iPC VRE </a>
+                          <div class="col-3">
+                            <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" class="ipc-button"> Go to iPC VRE </a>
                             <br />
                           </div>
                         </div>
@@ -185,12 +183,12 @@ class Explore extends Component {
                   <TabPanel>
                     {this.props.selections[1].length !== 0 ?
                       <>
-                        <div class="mt-5">
-                          <div className={classes.leftbox}>
+                        <div class="row mt-5">
+                          <div class="col-9">
                             <p> {DESCRIPTIONS_LABELS["analysisExists"]} </p>
                           </div>
-                          <div className={classes.rightbox}>
-                            <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className={classes2.ipcButton}> Go to Cavatica </a>
+                          <div class="col-3">
+                            <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" class="ipc-button"> Go to Cavatica </a>
                             <br />
                           </div>
                         </div>
