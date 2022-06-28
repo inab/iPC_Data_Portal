@@ -1,5 +1,4 @@
 import React from 'react';
-//import classes from './NavigationItems.module.css';
 import NavigationItem from './NavigationItem/NavigationItem';
 
 const logout = process.env.REACT_APP_AUTH_URL + "/realms/IPC/protocol/openid-connect/logout?redirect_uri=" + process.env.REACT_APP_URL;
@@ -14,7 +13,5 @@ const navigationItems = () => (
         <NavigationItem link={logout} exact> Logout </NavigationItem>
     </ul>
 );
-
-// Here I will have to use Redux for storing admin role status
 
 export default navigationItems;

@@ -1,0 +1,17 @@
+.logo {
+    width: 90px;
+    height: 90px;
+}
+
+.toolbar {
+    font-size: font-size(font-size-small);
+    padding: 0px 10px;
+    color: $color-tertiary;
+    font-weight: bold;
+
+    &:hover{
+        color: $color-primary;
+        text-decoration: none;
+        font-weight: font-weight(font-weight-thick);
+    }
+}

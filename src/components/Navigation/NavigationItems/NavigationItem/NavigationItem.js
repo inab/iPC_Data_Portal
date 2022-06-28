@@ -1,5 +1,4 @@
 import React from 'react';
-import classes from './NavigationItem.module.css';
 
 const navigationItem = ( props ) => {
 
@@ -8,7 +7,7 @@ const navigationItem = ( props ) => {
     var htmlLink = (
         <li>
         <a  href={props.link}
-            className={classes.toolbarFormatting}
+            class="toolbar"
             >{props.children}</a>
         </li>            
     ) 
