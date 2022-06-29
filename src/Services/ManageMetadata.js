@@ -21,10 +21,7 @@ const getDatasetsMetadata = async (datasetsLocators) => {
     let objects = await Promise.all(datasetsLocators.map(async (locator) => {
         let metadata = await axios({
             method: 'get',
-            url: `${REACT_APP_ES_URL}/${locator.metadata.es_index}/_search?pretty=true&size=10000&q=file_ID:${locator._id}`,
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("react-token")
-            }
+            url: `${REACT_APP_ES_URL}/${locator.metadata.es_index}/_search?pretty=true&size=10000&q=file_ID:${locator._id}`
         })
         return {
             'metadata': metadata.data.hits.hits[0]._source,
