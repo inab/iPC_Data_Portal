@@ -1,3 +1,10 @@
-.content-wrapper {
-    margin: 32px 16px 32px 16px;
+.site {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+
+    &-content-wrapper {
+        margin: 32px 16px 32px 16px;
+        flex: 1;
+    }
 }
