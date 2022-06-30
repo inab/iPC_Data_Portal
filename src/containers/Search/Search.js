@@ -62,11 +62,11 @@ class Search extends Component {
 
   render() {
 
-    var button = (<button class="ipc-button" onClick={this.cartHandler}>
+    var button = (<button className="ipc-button" onClick={this.cartHandler}>
       Add to cart
     </button>)
 
-    var buttonRefresh = (<button class="ipc-button" onClick={this.refreshProject}>
+    var buttonRefresh = (<button className="ipc-button" onClick={this.refreshProject}>
       Change Project
     </button>)
 
@@ -84,8 +84,9 @@ class Search extends Component {
       }
 
       return (
-        <div className="content-wrapper search-panel">
-          <h2> Select a project: </h2>
+        <div className="site-content-wrapper">
+          <h1> Search Area </h1>
+          <p style={{ "color": "#A9A9A9" }}> <strong> Please, select a project from the below list: </strong> </p>
           <div className="row h-100 text-center justify-content-center">
             <div className="col-12 h-50">
               <div className="row h-100">
@@ -111,7 +112,7 @@ class Search extends Component {
 
     const Portal = ({ style, ...props }) => {
       return (
-        <div style={{ display: 'flex', ...style }}>
+        <div style={{ display: 'flex', ...style }} className="mt-2">
           <Aggregations
             style={{ width: 300 }}
             componentProps={{

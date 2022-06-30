@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import Toolbar from '../../components/Navigation/Toolbar/Toolbar';
-import classes from './Layout.module.css';
 
 class Layout extends Component {
 
-    render () {
+    render() {
         return (
             <React.Fragment>
-                <Toolbar/>
-                {this.props.children}
+                <Toolbar />
+                <div className="site">
+                    {this.props.children}
+                </div>
             </ React.Fragment>
         )
     }

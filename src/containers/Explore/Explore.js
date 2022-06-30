@@ -109,14 +109,11 @@ class Explore extends Component {
     return (
       <>
         <br />
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-lg-12 text-left mt-5 mb-5 pl-5 pr-5">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12 text-left mt-5 mb-5 pl-5 pr-5">
               <h1> Data Management </h1>
-              <br />
-              <br />
               <p style={{ "color": "#A9A9A9" }}> <strong> {DESCRIPTIONS_LABELS["general"]} </strong> </p>
-              <br />
               <section>
                 <Tabs selectedIndex={this.state.selectedTab} onSelect={(index) => this.handleTab(index)}>
                   <TabList>
@@ -128,10 +125,9 @@ class Explore extends Component {
                   <TabPanel>
                     {this.props.cartWhitelist.length !== 0 || this.props.cartBlacklist.length !== 0 ?
                       <>
-                        <div class="mt-5">
+                        <div className="mt-5">
                           <p> {DESCRIPTIONS_LABELS["preselectedExists"]} </p>
                         </div>
-                        <br/>
                         <TabCard selections={this.props.cartWhitelist}
                                  sendToAnalysis={this.sendToAnalysis}
                                  getDetails={this.getDetails}
@@ -147,7 +143,7 @@ class Explore extends Component {
                                  stateSwitch={this.state.switch}
                                  currentSwitch="restrictedItems" />
                       </> : (
-                        <div class="mt-5 text-center">
+                        <div className="mt-5 text-center">
                           <p> <strong> {DESCRIPTIONS_LABELS["preselectedEmpty"]} </strong> </p>
                         </div>
                       )
@@ -156,11 +152,11 @@ class Explore extends Component {
                   <TabPanel>
                     {this.props.selections.length !== 0 && this.props.selections[0].length !== 0 ?
                       <>
-                        <div class="row mt-5">
-                          <div class="col-9">
+                        <div className="row mt-5">
+                          <div className="col-9">
                             <p> {DESCRIPTIONS_LABELS["analysisExists"]} </p>
                           </div>
-                          <div class="col-3">
+                          <div className="col-3">
                             <a href="https://vre.ipc-project.bsc.es/openvre/login.php?redirect=https%3A%2F%2Fhttps://vre.ipc-project.bsc.es/openvre/getdata/ipc/ipc_datasets.php" target="_blank" class="ipc-button"> Go to iPC VRE </a>
                             <br />
                           </div>
@@ -174,7 +170,7 @@ class Explore extends Component {
                                  stateSwitch={this.state.switch}
                                  currentSwitch="vre" />
                       </> : (
-                        <div class="mt-5 text-center">
+                        <div className="mt-5 text-center">
                           <p> <strong> {DESCRIPTIONS_LABELS["analysisEmpty"]} </strong> </p>
                         </div>
                       )
@@ -183,12 +179,12 @@ class Explore extends Component {
                   <TabPanel>
                     {this.props.selections.length !== 0 && this.props.selections[1].length !== 0 ?
                       <>
-                        <div class="row mt-5">
-                          <div class="col-9">
+                        <div className="row mt-5">
+                          <div className="col-9">
                             <p> {DESCRIPTIONS_LABELS["analysisExists"]} </p>
                           </div>
-                          <div class="col-3">
-                            <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" class="ipc-button"> Go to Cavatica </a>
+                          <div className="col-3">
+                            <a href="https://pgc-accounts.sbgenomics.com/auth/login" target="_blank" className="ipc-button"> Go to Cavatica </a>
                             <br />
                           </div>
                         </div>
@@ -201,14 +197,14 @@ class Explore extends Component {
                                  stateSwitch={this.state.switch}
                                  currentSwitch="cavatica" />
                       </> : (
-                        <div class="mt-5 text-center">
+                        <div className="mt-5 text-center">
                           <p> <strong> {DESCRIPTIONS_LABELS["analysisEmpty"]} </strong> </p>
                         </div>
                       )
                     }
                   </TabPanel>
                   <TabPanel>
-                    <div class="mt-5 text-center">
+                    <div className="mt-5 text-center">
                       <p> <strong> {DESCRIPTIONS_LABELS["export"]} </strong> </p>
                     </div>
                     <DownloadCSV collections={[ { items: this.props.selections[0], label: DOWNLOAD_LABELS["vre"] }, 
