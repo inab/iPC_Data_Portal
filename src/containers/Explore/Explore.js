@@ -98,7 +98,6 @@ class Explore extends Component {
     e.preventDefault();
     const object = { ...this.state.requestData }
     await submitDataRequest(object)
-    alert("Submitted")
     this.setState({ request: false });
   }
 
