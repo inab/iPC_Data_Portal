@@ -8,7 +8,7 @@ import { store, persistor } from './Redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import FetchUserSelections from './Layout/FetchUserSelections/FetchUserSelections';
 
-const initApp = async () => {
+(async () => {
     const isAuthenticated = await userAuth();
 
     if(!isAuthenticated) window.location.reload();
@@ -35,6 +35,4 @@ const initApp = async () => {
     );
     
     ReactDOM.render(app, document.getElementById('root'));
-}
-
-initApp();
+})();
