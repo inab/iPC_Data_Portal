@@ -31,7 +31,7 @@ const generateCartStore = (selectedDatasets, datasetsPermissions) => {
     let allowedDatasetsIds;
 
     if(datasetsPermissions.length > 0) {
-        allowedDatasetsIds = datasetsPermissions.map(visa => JSON.parse(visa).ga4gh_visa_v1.value.split(":").pop())
+        allowedDatasetsIds = datasetsPermissions.map(visa => visa.ga4gh_visa_v1.value.split(":").pop())
     }
 
     const datasetsMask = getDatasetsMask(selectedDatasets, allowedDatasetsIds)
