@@ -1,16 +1,18 @@
 import axios from 'axios';
 
-// Permissions-API: Get user dataset permissions in the form of visas (GA4GH spec)
+// Keycloak (GA4GH Passport broker): Getting user dataset permissions from GA4GH Visa issuers
 const getUserDatasetPermissions = async () => {
-    const { REACT_APP_PERMISSIONS_URL } = process.env;
+    const { REACT_APP_AUTH_URL } = process.env;
+
     const response = await axios({
         method: 'get',
-        url: `${REACT_APP_PERMISSIONS_URL}/me/permissions?format=PLAIN`, 
+        url: `${REACT_APP_AUTH_URL}/realms/IPC/protocol/openid-connect/userinfo`, 
         headers: {
           Authorization: "Bearer " + localStorage.getItem("react-token")
         }
     })
-    return response.data 
+
+    return response.data.ga4gh_passport_v1 ? response.data.ga4gh_passport_v1 : [] 
 }
 
 const getDatasetsMask = (selectedDatasets, datasetsIds) => {
