@@ -88,6 +88,7 @@ services:
       KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     volumes:
       - "./ipc-test-data/keycloak/realms:/opt/jboss/keycloak/imports"
+      - "./ipc-plugins/keycloak:/opt/jboss/keycloak/standalone/deployments"
     command:
       - '-b 0.0.0.0 -Dkeycloak.profile.feature.upload_scripts=enabled -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.migration.strategy=IGNORE_EXISTING'
     ports:
