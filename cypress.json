@@ -1,6 +1,6 @@
 {
     "baseUrl" : "http://172.21.0.15:3000",
-    "auth-url" : "http://172.21.0.1:8080",
+    "auth-url" : "http://172.21.0.12:8080/auth",
     "outbox-api-url" : "http://172.21.0.1:8085",
     "es-url" : "http://172.21.0.1:9200",
     "chromeWebSecurity": false,

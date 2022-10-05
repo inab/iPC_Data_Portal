@@ -48,7 +48,7 @@ describe("Stories: Permissions-API - Authenticated users can add items to the ca
     it("CASE III: Items assigned to the whitelist/blacklist - 1 public dataset & 2 private datasets ungranted/granted access", function () {
         // A. Mock documents selection (Redux async action (thunk): addItem) - It will be added to the cartBlacklist AFTER checking user file permissions on Permissions-API.
         cy.wait(5000);
-        cy.getStore().then(store => store.dispatch(addItem([...this.whitelistItems, this.blacklistItems]));
+        cy.getStore().then(store => store.dispatch(addItem([...this.whitelistItems, this.blacklistItems])));
         cy.wait(5000);
         // B. Check if the item has been added to the blacklist.
         cy.checkCartItems(this.whitelistItems, this.blacklistItems, true, true);
