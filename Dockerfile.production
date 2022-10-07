@@ -18,6 +18,7 @@ ENV REACT_APP_PERMISSIONS_URL=https://catalogue.ipc-project.bsc.es/permissions/a
 ENV REACT_APP_AUTH_URL=https://inb.bsc.es/auth
 ENV REACT_APP_URL=https://catalogue.ipc-project.bsc.es
 ENV REACT_APP_DAC_PORTAL_API_URL="https://dac.ipc-project.bsc.es/api"
+ENV REACT_APP_EGA_URL="https://permissions.ega-archive.org"
 ENV PORT=5002
 
 RUN npm run build
