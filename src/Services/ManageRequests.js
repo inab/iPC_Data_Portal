@@ -23,27 +23,36 @@ const getDataPolicies = async (data) => {
 // Send data requests to the different Data Access Frameworks (BSC, EGA, ...) -> OAuth2 Token exchange protocol
 const submitDataRequest = async (data) => {
 
-  let token, requestData, url, headers;
+  let token, requestData, url;
 
-  if(data.dataset.includes("IPC")) {
+  if(data.dataset.includes("EGA")) {
+    const egaResponse = await getEGAAccessToken();
+    token = egaResponse.data.access_token;
+    requestData = { 'dataset_id': data.dataset, 'form_fields': { 'comment' : data.comments }};
+    url = `${REACT_APP_EGA_URL}/requests`; 
+  } else {
     token = localStorage.getItem("react-token")
     requestData = { 'ds-id': data.dataset, 'policy': data.policy, 'comments': data.comments };
     url = `${REACT_APP_DAC_PORTAL_API_URL}/user/request`;
-    headers = 'Authorization: Bearer ' + token
   }
-  if(data.dataset.includes("EGA")) {
-    token = await getEGAAccessToken();
-    requestData = { 'dataset_id': data.dataset, 'form_fields': { 'comments' : data.comments }};
-    url = `${REACT_APP_EGA_URL}/requests`;
-    headers = 'Authorization: Bearer ' + token    
+
+  const config = {
+    method: 'post',
+    url: url,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: "Bearer " + token
+    },
+    data: requestData
   }
 
   try {
-    await axios({ method: 'post', url: url, headers: { headers }, data: requestData })
+    await axios(config)
     alert("Submitted")
   } catch (e) {
     alert("Not submitted")
   }
+
 }
 
 export { getDataPolicies, submitDataRequest }
