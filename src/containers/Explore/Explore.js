@@ -80,7 +80,7 @@ class Explore extends Component {
   handleRequest = async (e, d) => {
     e.preventDefault();
     const itemPolicy = await getDataPolicies(d);
-    const setPolicy = { ...this.state.requestData, 'policy': itemPolicy.policy, 'dataset': itemPolicy.dataset }
+    const setPolicy = { ...this.state.requestData, 'policy': itemPolicy.policy, 'dataset': itemPolicy.dataset, 'resource': itemPolicy.resource }
     this.setState({ request: true, requestData: setPolicy });
   }
 
@@ -103,7 +103,7 @@ class Explore extends Component {
 
   render() {
 
-    let { comments, policy, dataset } = this.state.requestData
+    let { comments, policy, resource, dataset } = this.state.requestData
 
     return (
       <>
