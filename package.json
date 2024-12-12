@@ -9,7 +9,7 @@
     "bootstrap": "^4.6.0",
     "cross-env": "7.0.3",
     "custom-env": "^2.0.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "jwk-to-pem": "^2.0.5",
     "keycloak-js": "^9.0.0",
     "node-sass": "4.13.1",
