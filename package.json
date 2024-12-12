@@ -5,7 +5,7 @@
   "dependencies": {
     "@arranger/admin-ui": "^2.0.7",
     "@arranger/components": "2.0.7",
-    "axios": "^0.19.2",
+    "axios": "^0.21.2",
     "bootstrap": "^4.6.0",
     "cross-env": "7.0.3",
     "custom-env": "^2.0.1",
